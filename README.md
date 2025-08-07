@@ -2,6 +2,13 @@
 
 <p><b>Free admin dashboard</b> is an open-source admin template designed in Figma and developed in React.js, Tailwind CSS and TypeScript. My goal in this project is to deliver a high-quality and premium design dashboard template by following the best React.js practices. This <b>React admin dashboard</b> is created using advanced React.js design patterns like controlled and uncontrolled components design patterns, custom hooks patterns, layout components patterns, component composition patterns, compound components design patterns and many more… This is mainly an eCommerce dashboard template, but in the future if the repository becomes popular, I will expand it to more niches. The dashboard is completely responsive, and it is available for <b>free download</b>.</p>
 
+<h2>Other interesting open-source projects</h2>
+<a href="https://github.com/Kuzma02/All-For-Car-Ecommerce" target="_blank">High-performance Next.js eCommerce platform for automotive products</a><br />
+<a href="https://github.com/Kuzma02/VSD-Official-Website" target="_blank">Car Parts Company Official Website in Next.js</a><br />
+<a href="https://github.com/Kuzma02/Luxury-Cosmetics-eCommerce-NextJS" target="_blank">Luxury Cosmetics eCommerce Shop in Next.js</a><br />
+<a href="https://github.com/Kuzma02/Electronics-eCommerce-Shop-With-Admin-Dashboard-NextJS-NodeJS" target="_blank">Electronics eCommerce Shop With Admin Dashboard in Next.js and Node.js</a><br />
+<a href="https://github.com/Kuzma02/Fashion-eCommerce-Shop-in-React" target="_blank">Premium Fashion eCommerce Shop</a>
+
 <h2>Admin dashboard design</h2>
   
 <p><b>Admin dashboard design</b> is designed in Figma by following foundational and best practices for e-commerce dashboard UI design. My goal is to create it as simple as possible and with a premium user interface. The complete design is created with the end user in mind. You can use the admin panel template for any type of eCommerce website, you only need to connect it with the back end, and everything will work smoothly. <b>The admin panel for the eCommerce website</b> is fully <b>open source</b>, which means you can easily add more features if you want to. The admin dashboard template source code is written by following the best practices, so you won’t have problems with it. The <b>react dashboard</b> is completely customizable and flexible, so you can easily make it yours. The admin panel design is designed by following the best design practices like visual hierarchy, proximity, white space, consistency, contrast and many more…</p>
