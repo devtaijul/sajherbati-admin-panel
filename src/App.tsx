@@ -39,10 +39,6 @@ const router = createBrowserRouter([
     children: [
       {
         index: true,
-        element: <Landing />,
-      },
-      {
-        path: "/landing-v2",
         element: <LandingV2 />,
       },
       {
@@ -118,7 +114,6 @@ const router = createBrowserRouter([
         element: <Profile />,
       },
     ],
-    
   },
 ]);
 
