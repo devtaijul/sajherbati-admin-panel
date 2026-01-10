@@ -8,15 +8,17 @@
 // Output: The header component
 // *********************
 
-import { FaReact } from "react-icons/fa6";
-import { HiOutlineMoon, HiOutlineSun } from "react-icons/hi";
-import { HiOutlineBell } from "react-icons/hi";
-import { HiOutlineMenu } from "react-icons/hi";
-import { useAppDispatch, useAppSelector } from "../hooks";
-import { setSidebar } from "../features/dashboard/dashboardSlice";
+import {
+  HiOutlineBell,
+  HiOutlineMenu,
+  HiOutlineMoon,
+  HiOutlineSun,
+} from "react-icons/hi";
 import { Link } from "react-router-dom";
-import SearchInput from "./SearchInput";
 import { toggleDarkMode } from "../features/darkMode/darkModeSlice";
+import { setSidebar } from "../features/dashboard/dashboardSlice";
+import { useAppDispatch, useAppSelector } from "../hooks";
+import SearchInput from "./SearchInput";
 
 const Header = () => {
   const dispatch = useAppDispatch();

@@ -1,22 +1,20 @@
-import { Sidebar, SingleStatsV2, TotalSavings } from "../components";
 import {
   HiArrowSmallDown,
+  HiArrowSmallUp,
   HiCurrencyDollar,
+  HiShoppingCart,
   HiUserGroup,
 } from "react-icons/hi2";
-import { HiArrowSmallUp } from "react-icons/hi2";
-import { HiShoppingCart } from "react-icons/hi2";
+import { Sidebar, SingleStatsV2, TotalSavings } from "../components";
 import ChartItem from "../components/chart/ChartItem";
-import RechartsAreaChart from "../components/chart/RechartsAreaChart";
 import RechartsBarChart from "../components/chart/RechartsBarChart";
-import RechartsLineChart from "../components/chart/RechartsLineChart";
 
 const Landingv2 = () => {
   return (
-    <div className="h-auto border-t dark:border-blackSecondary border-blackSecondary border-1 flex dark:bg-blackPrimary bg-whiteSecondary">
+    <div className="flex h-auto border-t dark:border-blackSecondary border-blackSecondary border-1 dark:bg-blackPrimary bg-whiteSecondary">
       <Sidebar />
-      <div className="dark:bg-blackPrimary bg-whiteSecondary w-full pt-6 pl-9 max-sm:pt-6 max-sm:pl-1">
-        <h3 className="text-3xl dark:text-whiteSecondary text-blackPrimary font-bold mb-7 max-sm:text-2xl px-5">
+      <div className="w-full pt-6 dark:bg-blackPrimary bg-whiteSecondary pl-9 max-sm:pt-6 max-sm:pl-1">
+        <h3 className="px-5 text-3xl font-bold dark:text-whiteSecondary text-blackPrimary mb-7 max-sm:text-2xl">
           Overview
         </h3>
         {/* stats */}
@@ -26,8 +24,8 @@ const Landingv2 = () => {
               <HiCurrencyDollar className="text-2xl" />
             </SingleStatsV2.StatsCategory>
             <SingleStatsV2.MoneyStats moneyAmount="$8650.50">
-              <p className="text-white dark:bg-green-700 bg-green-500 w-20 h-10 flex gap-1 items-center justify-center font-semibold">
-                <HiArrowSmallUp className="text-blackPrimary text-xl" />{" "}
+              <p className="flex items-center justify-center w-20 h-10 gap-1 font-semibold text-white bg-green-500 dark:bg-green-700">
+                <HiArrowSmallUp className="text-xl text-blackPrimary" />{" "}
                 <span>12.8%</span>
               </p>
             </SingleStatsV2.MoneyStats>
@@ -39,8 +37,8 @@ const Landingv2 = () => {
               <HiShoppingCart className="text-2xl" />
             </SingleStatsV2.StatsCategory>
             <SingleStatsV2.MoneyStats moneyAmount="$1590">
-              <p className="text-white dark:bg-red-700 bg-red-500 w-20 h-10 flex gap-1 items-center justify-center font-semibold">
-                <HiArrowSmallDown className="text-blackPrimary text-xl" />{" "}
+              <p className="flex items-center justify-center w-20 h-10 gap-1 font-semibold text-white bg-red-500 dark:bg-red-700">
+                <HiArrowSmallDown className="text-xl text-blackPrimary" />{" "}
                 <span>3.3%</span>
               </p>
             </SingleStatsV2.MoneyStats>
@@ -52,8 +50,8 @@ const Landingv2 = () => {
               <HiCurrencyDollar className="text-2xl" />
             </SingleStatsV2.StatsCategory>
             <SingleStatsV2.MoneyStats moneyAmount="12400.75">
-              <p className="text-white dark:bg-green-700 bg-green-500 w-20 h-10 flex gap-1 items-center justify-center font-semibold">
-                <HiArrowSmallUp className="text-blackPrimary text-xl" />{" "}
+              <p className="flex items-center justify-center w-20 h-10 gap-1 font-semibold text-white bg-green-500 dark:bg-green-700">
+                <HiArrowSmallUp className="text-xl text-blackPrimary" />{" "}
                 <span>15.1%</span>
               </p>
             </SingleStatsV2.MoneyStats>
@@ -68,8 +66,8 @@ const Landingv2 = () => {
               <HiUserGroup className="text-2xl" />
             </SingleStatsV2.StatsCategory>
             <SingleStatsV2.MoneyStats moneyAmount="450">
-              <p className="text-white dark:bg-green-700 bg-green-500 w-20 h-10 flex gap-1 items-center justify-center font-semibold">
-                <HiArrowSmallUp className="text-blackPrimary text-xl" />{" "}
+              <p className="flex items-center justify-center w-20 h-10 gap-1 font-semibold text-white bg-green-500 dark:bg-green-700">
+                <HiArrowSmallUp className="text-xl text-blackPrimary" />{" "}
                 <span>3.8%</span>
               </p>
             </SingleStatsV2.MoneyStats>
@@ -80,12 +78,11 @@ const Landingv2 = () => {
           </SingleStatsV2>
         </div>
         <div className="w-[95%] px-5 mt-10 max-md:w-[90%] max-[400px]:w-[95%] dark:bg-black bg-whiteSecondary">
+          <ChartItem title="Revenue VS Profit">
+            <RechartsBarChart />
+          </ChartItem>
 
-        <ChartItem title="Revenue VS Profit">
-          <RechartsBarChart />
-        </ChartItem>
-
-        <TotalSavings isPositive={true} percentage="25%" />
+          <TotalSavings isPositive={true} percentage="25%" />
         </div>
       </div>
     </div>
