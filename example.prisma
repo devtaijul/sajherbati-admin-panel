@@ -1,0 +1,64 @@
+model Variation {
+    id             String   @id @default(uuid())
+    Product        Product? @relation(fields: [productId], references: [id])
+    name           String
+    sku            String?
+    productId      String?
+    mainImage      String
+    regularPrice   Int      @default(0)
+    price          Int      @default(0)
+    description    Json
+    isStitched     Boolean  @default(false)
+    sizes          String[] @default([])
+    body           String?
+    long           String?
+    pantLong       String?
+    innerAndSalwar String?
+    liveLink       String?
+    inStock        Int      @default(1)
+    videoUrl       Json?
+    createdAt      DateTime @default(now())
+    updatedAt      DateTime @updatedAt
+}
+
+model Product {
+    id                String  @id @default(uuid())
+    title             String done
+    slug              String  @unique
+    manufacturer      String?
+    color             String?
+    isTopSelling      Boolean @default(false)
+    newArrival        Boolean @default(false)
+    isCustomeRelation Boolean @default(false)
+    instruction       Json?
+
+    // New field for custom ordering
+    displayPriority Int          @default(0) // Higher number = higher priority
+    categoryId      String
+    category        Category     @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+    images          String[]
+    collections     Collection[]
+    keywords        String[]     @default([]) // New field for keywords
+    paletteColor    String       @default("#FF0000") // New field for palette color
+    relative        Relative?    @relation(fields: [relativeId], references: [id], onDelete: Cascade)
+    relativeId      String?
+    name            String
+    sku             String?
+    regularPrice    Int          @default(0)
+    price           Int          @default(0)
+    description     Json
+    isStitched      Boolean      @default(false)
+    sizes           String[]     @default([])
+    body            String?
+    long            String?
+    pantLong        String?
+    innerAndSalwar  String?
+    liveLink        String?
+    inStock         Int          @default(1)
+    videoUrl        Json?
+    seoTitle        String?
+    seoDescription  String?
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+}
