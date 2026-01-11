@@ -77,6 +77,7 @@ const CreateProduct = () => {
             <InputWithLabel label="Description">
               <ReactQuill
                 theme="snow"
+                className="text-black dark:text-white"
                 onChange={(val) => setValue("description", val)}
               />
             </InputWithLabel>

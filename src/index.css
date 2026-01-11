@@ -2,26 +2,56 @@
 @tailwind components;
 @tailwind utilities;
 
-body{
-    font-family: "Inter", sans-serif;
+body {
+  font-family: "Inter", sans-serif;
 }
 
 /* Sidebar closed state */
 .sidebar-closed {
-    transform: translateX(-100%);
-    transition: transform 0.3s ease-out;
-  }
-  
-  /* Sidebar open state */
-  .sidebar-open {
-    transform: translateX(0);
-    transition: transform 0.3s ease-in;
-  }
+  transform: translateX(-100%);
+  transition: transform 0.3s ease-out;
+}
 
-  .ql-snow .ql-stroke {
-    stroke: #F0F0F0;
-  }
+/* Sidebar open state */
+.sidebar-open {
+  transform: translateX(0);
+  transition: transform 0.3s ease-in;
+}
 
-  .ql-snow .ql-picker-label::before {
-    color: #F0F0F0;
-  }
+/* ================= LIGHT MODE ================= */
+html:not(.dark) .ql-snow .ql-stroke {
+  stroke: #111827; /* gray-900 */
+}
+
+html:not(.dark) .ql-snow .ql-fill {
+  fill: #111827;
+}
+
+html:not(.dark) .ql-snow .ql-picker-label::before {
+  color: #111827;
+}
+
+html:not(.dark) .ql-snow .ql-toolbar button {
+  color: #111827;
+}
+
+/* ================= DARK MODE ================= */
+html.dark .ql-snow .ql-stroke {
+  stroke: #f0f0f0;
+}
+
+html.dark .ql-snow .ql-fill {
+  fill: #f0f0f0;
+}
+
+html.dark .ql-snow .ql-picker-label::before {
+  color: #f0f0f0;
+}
+
+html.dark .ql-snow .ql-toolbar button {
+  color: #f0f0f0;
+}
+
+.ql-editor {
+  min-height: 150px;
+}

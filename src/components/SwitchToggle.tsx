@@ -1,13 +1,16 @@
 // components/SwitchToggle.tsx
 const SwitchToggle = ({ label, register }: any) => {
   return (
-    <label className="flex items-center justify-between cursor-pointer">
+    <label className="flex items-center justify-between gap-3 cursor-pointer ">
       <span className="dark:text-whiteSecondary text-blackPrimary">
         {label}
       </span>
-      <input type="checkbox" {...register} className="hidden peer" />
-      <div className="relative w-10 h-5 bg-gray-600 rounded-full peer-checked:bg-green-500">
-        <div className="absolute left-1 top-0.5 w-4 h-4 bg-white rounded-full transition peer-checked:translate-x-5" />
+
+      <div className="relative">
+        <input type="checkbox" {...register} className="sr-only peer" />
+
+        <div className="relative h-6 transition-colors bg-gray-400 rounded-full w-11 peer-checked:bg-green-500 "></div>
+        <div className="absolute w-4 h-4 transition-transform bg-white rounded-full peer-checked:left-0 left-1 top-1 peer-checked:translate-x-6 peer-checked:dark:bg-gray-900" />
       </div>
     </label>
   );
