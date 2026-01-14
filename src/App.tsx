@@ -15,6 +15,7 @@ import {
   HomeLayout,
   LandingV2,
   Login,
+  MediaLibrary,
   Notifications,
   Orders,
   Products,
@@ -23,6 +24,7 @@ import {
   Reviews,
   Users,
 } from "./pages";
+
 const router = createBrowserRouter([
   {
     path: "/login",
@@ -89,6 +91,10 @@ const router = createBrowserRouter([
         element: <CreateReview />,
       },
       {
+        path: "/media-library",
+        element: <MediaLibrary />,
+      },
+      {
         path: "/users",
         element: <Users />,
       },
@@ -100,6 +106,7 @@ const router = createBrowserRouter([
         path: "/users/create-user",
         element: <CreateUser />,
       },
+
       {
         path: "/help-desk",
         element: <HelpDesk />,
