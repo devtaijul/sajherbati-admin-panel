@@ -14,10 +14,11 @@ import { useForm } from "react-hook-form";
 
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
-import { productSchema } from "../utils/validation";
+import { ProductSchema, productSchema } from "../utils/validation";
 import SwitchToggle from "../components/SwitchToggle";
 import ColorPicker from "../components/ColorPicker";
 import KeywordInput from "../components/KeywordInput";
+import React from "react";
 
 const CreateProduct = () => {
   const {
@@ -29,10 +30,12 @@ const CreateProduct = () => {
   } = useForm({
     resolver: zodResolver(productSchema),
   });
+  const [featuredImage, setFeaturedImage] = React.useState<string[]>([]);
+  const [galleryImages, setGalleryImages] = React.useState<string[]>([]);
 
   const stitchType = watch("stitchType");
 
-  const onSubmit = (data: any) => {
+  const onSubmit = (data: ProductSchema) => {
     console.log("PRODUCT DATA 👉", data);
   };
 
@@ -74,32 +77,25 @@ const CreateProduct = () => {
               )}
             </InputWithLabel>
 
-            <InputWithLabel label="Description">
-              <ReactQuill
-                theme="snow"
-                className="text-black dark:text-white"
-                onChange={(val) => setValue("description", val)}
-              />
-            </InputWithLabel>
-
-            <InputWithLabel label="Instruction">
-              <ReactQuill
-                theme="snow"
-                onChange={(val) => setValue("instruction", val)}
-              />
-            </InputWithLabel>
-
             <InputWithLabel label="Category">
-              <SelectInput {...register("categoryId")} selectList={[]} />
+              <SelectInput
+                {...register("categoryId")}
+                selectList={[
+                  { value: "1", label: "Category 1" },
+                  { value: "2", label: "Category 2" },
+                ]}
+              />
             </InputWithLabel>
 
             {/* Stitch Type */}
             <InputWithLabel label="Product Type">
-              <select {...register("stitchType")} className="input">
-                <option value="">Select</option>
-                <option value="STITCH">Stitch</option>
-                <option value="UNSTITCH">Unstitch</option>
-              </select>
+              <SelectInput
+                {...register("stitchType")}
+                selectList={[
+                  { value: "STITCH", label: "Stitch" },
+                  { value: "UNSTITCH", label: "Unstitch" },
+                ]}
+              />
             </InputWithLabel>
 
             {/* Related Product */}
@@ -127,7 +123,13 @@ const CreateProduct = () => {
 
             <div className="grid grid-cols-2 gap-5">
               <InputWithLabel label="Stock">
-                <SimpleInput type="number" {...register("inStock")} />
+                <SelectInput
+                  {...register("categoryId")}
+                  selectList={[
+                    { value: "1", label: "In Stock" },
+                    { value: "0", label: "Out of Stock" },
+                  ]}
+                />
               </InputWithLabel>
 
               <InputWithLabel label="SKU">
@@ -166,7 +168,7 @@ const CreateProduct = () => {
               <InputWithLabel label="Display Priority">
                 <SelectInput
                   {...register("displayPriority")}
-                  options={[
+                  selectList={[
                     { label: "Default (0)", value: "0" },
                     ...Array.from({ length: 20 }).map((_, i) => ({
                       label: String(i + 1),
@@ -180,7 +182,7 @@ const CreateProduct = () => {
               <InputWithLabel label="Keywords">
                 <KeywordInput
                   value={watch("keywords")}
-                  onChange={(val: any) => setValue("keywords", val)}
+                  onChange={(val: string[]) => setValue("keywords", val)}
                 />
               </InputWithLabel>
 
@@ -207,9 +209,22 @@ const CreateProduct = () => {
 
               {/* Video */}
               <InputWithLabel label="Product Video">
+                <SimpleInput {...register("liveLink")} />
+              </InputWithLabel>
+
+              <InputWithLabel label="Description">
                 <ReactQuill
                   theme="snow"
-                  onChange={(val) => setValue("videoUrl", val)}
+                  className="bg-white dark:bg-blackPrimary dark:text-white text-blackPrimary"
+                  onChange={(val) => setValue("description", val)}
+                />
+              </InputWithLabel>
+
+              <InputWithLabel label="Instruction">
+                <ReactQuill
+                  theme="snow"
+                  className="bg-white dark:bg-blackPrimary dark:text-white text-blackPrimary"
+                  onChange={(val) => setValue("instruction", val)}
                 />
               </InputWithLabel>
             </div>
@@ -276,7 +291,14 @@ const CreateProduct = () => {
           {/* RIGHT */}
           <div>
             <h3 className="section-title">Product images</h3>
-            <ImageUpload />
+            <ImageUpload
+              onSelect={(value) => {
+                setFeaturedImage(value);
+              }}
+              label="Featured Image"
+              selectedImageIds={featuredImage}
+              previewPosition="outside"
+            />
           </div>
         </div>
       </form>

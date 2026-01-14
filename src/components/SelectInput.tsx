@@ -16,15 +16,15 @@ interface TextAreaProps extends React.InputHTMLAttributes<HTMLSelectElement> {
   value?: string;
 }
 
-const SelectInput: React.FC<TextAreaProps> = (props) => {
+const SelectInput: React.FC<TextAreaProps> = ({ selectList, ...props }) => {
   return (
     <select
       value={props.value}
       onChange={props.onChange}
       className="w-full h-10 pl-3 pr-8 bg-white border border-gray-600 cursor-pointer dark:bg-blackPrimary dark:text-whiteSecondary text-blackPrimary outline-0 dark:hover:border-gray-500 hover:border-gray-400"
     >
-      {props?.selectList &&
-        props?.selectList.map((item: { value: string; label: string }) => {
+      {selectList &&
+        selectList.map((item: { value: string; label: string }) => {
           const { value, label } = item;
 
           return (

@@ -15,18 +15,18 @@ const KeywordInput = ({ value = [], onChange }: any) => {
   };
 
   return (
-    <div>
-      <div className="flex gap-2">
+    <div className="w-full p-3 overflow-hidden bg-white rounded-sm dark:bg-blackPrimary">
+      <div className="flex w-full gap-2 border">
         <input
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          className="input"
+          className="flex-1 w-full px-4 py-2 input dark:bg-blackPrimary dark:text-whiteSecondary text-blackPrimary"
           placeholder="Add keyword"
         />
         <button
           type="button"
           onClick={addKeyword}
-          className="px-3 text-white bg-black"
+          className="px-3 text-white bg-black dark:bg-whiteSecondary dark:text-blackPrimary"
         >
           +
         </button>

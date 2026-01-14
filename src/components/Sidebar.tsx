@@ -88,6 +88,15 @@ const Sidebar = () => {
             <span className="text-lg">Orders</span>
           </NavLink>
           <NavLink
+            to="/media-library"
+            className={(isActiveObj) =>
+              isActiveObj.isActive ? navActiveClass : navInactiveClass
+            }
+          >
+            <HiOutlineTruck className="text-xl" />
+            <span className="text-lg">Media</span>
+          </NavLink>
+          <NavLink
             to="/users"
             className={(isActiveObj) =>
               isActiveObj.isActive ? navActiveClass : navInactiveClass

@@ -5,6 +5,10 @@ import { z } from "zod";
 import { z } from "zod";
 
 export const productSchema = z.object({
+  /* ================= Images ================= */
+  featuredImage: z.string().optional(),
+  galleryImages: z.array(z.string()).optional(),
+
   /* ================= BASIC ================= */
   title: z.string().min(3, "Title is required").max(150, "Title too long"),
 
