@@ -132,7 +132,7 @@ const MediaSelector: React.FC<MediaSelectorProps> = ({
       {showPreview && previewPosition === "outside" && (
         <div className="mb-4">
           <div className="flex items-center justify-between mb-2">
-            <h3 className="font-medium">Selected Images</h3>
+            <h3 className="font-medium dark:text-white">Selected Images</h3>
             {selectedIds.length > 0 && (
               <button
                 onClick={handleClearAll}

@@ -34,7 +34,7 @@ const ImageUpload = ({
 
         {/* Option 2: Media Library */}
         <div className="flex-1 min-w-[300px]">
-          <h3 className="mb-3 font-medium">{label}</h3>
+          <h3 className="mb-3 font-medium dark:text-white ">{label}</h3>
           <MediaSelector
             onSelect={onSelect}
             selectedMedia={selectedImageIds}

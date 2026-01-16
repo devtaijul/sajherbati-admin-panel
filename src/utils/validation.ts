@@ -1,74 +1,99 @@
-// src/schema/product.schema.ts
 import { z } from "zod";
 
-// schema/product.schema.ts
-import { z } from "zod";
+export const productSchema = z
+  .object({
+    /* ================= BASIC ================= */
+    title: z.string().min(3, "Title is required").max(150),
 
-export const productSchema = z.object({
-  /* ================= Images ================= */
-  featuredImage: z.string().optional(),
-  galleryImages: z.array(z.string()).optional(),
+    categoryId: z.string().min(1, "Category is required"),
 
-  /* ================= BASIC ================= */
-  title: z.string().min(3, "Title is required").max(150, "Title too long"),
+    stitchType: z.enum(["STITCH", "UNSTITCH"]),
 
-  categoryId: z.string().min(1, "Category is required"),
+    relatedProductId: z.string().optional(),
 
-  /* ================= VARIANT ================= */
-  stitchType: z.enum(["STITCH", "UNSTITCH"], {
-    required_error: "Product type is required",
-  }),
+    /* ================= VARIANT ================= */
+    sizes: z.array(z.string()).optional(),
 
-  relatedProductId: z.string().optional(),
+    /* ================= PRICING ================= */
+    regularPrice: z.coerce.number().min(0),
+    price: z.coerce.number().min(0),
 
-  /* ================= PRICING ================= */
-  regularPrice: z.coerce.number().min(0, "Base price cannot be negative"),
+    /* ================= STOCK ================= */
+    inStock: z.boolean().default(true),
+    sku: z.string().optional(),
 
-  price: z.coerce.number().min(0, "Discount price cannot be negative"),
+    /* ================= FLAGS ================= */
+    isTopSelling: z.boolean().default(false),
+    newArrival: z.boolean().default(false),
+    isCustomeRelation: z.boolean().default(false),
 
-  /* ================= STOCK ================= */
-  inStock: z.boolean().default(true),
+    /* ================= VISUAL ================= */
+    color: z.string().optional(),
+    manufacturer: z.string().optional(),
 
-  sku: z.string().optional(),
+    displayPriority: z.string().optional(),
 
-  /* ================= FLAGS ================= */
-  isTopSelling: z.boolean().default(false),
-  newArrival: z.boolean().default(false),
-  isCustomeRelation: z.boolean().default(false),
+    /* ================= KEYWORDS ================= */
+    keywords: z.array(z.string()).default([]),
 
-  /* ================= VISUAL ================= */
-  color: z
-    .string()
-    .regex(/^#([0-9A-Fa-f]{6})$/, "Invalid hex color")
-    .optional(),
+    /* ================= MEASUREMENTS ================= */
+    body: z.string().optional(),
+    pantLong: z.string().optional(),
+    kamizLong: z.string().optional(),
+    innerAndSalwar: z.string().optional(),
 
-  manufacturer: z.string().max(100, "Manufacturer name too long").optional(),
+    /* ================= CONTENT ================= */
+    description: z.any(),
+    instruction: z.any().optional(),
+    videoUrl: z.any().optional(),
+    liveLink: z.any().optional(),
 
-  displayPriority: z.coerce.number().min(0).max(20).default(0),
+    /* ================= SEO ================= */
+    seoTitle: z.string().max(70).optional(),
+    seoDescription: z.string().max(160).optional(),
+  })
+  .superRefine((data, ctx) => {
+    /* ================= STITCH ================= */
+    if (data.stitchType === "STITCH") {
+      // sizes required
+      if (!data.sizes || data.sizes.length === 0) {
+        ctx.addIssue({
+          path: ["sizes"],
+          message: "At least one body size is required for stitched product",
+          code: z.ZodIssueCode.custom,
+        });
+      }
 
-  /* ================= KEYWORDS ================= */
-  keywords: z.array(z.string().min(1)).max(20, "Max 20 keywords").default([]),
+      // pant length required
+      if (!data.pantLong) {
+        ctx.addIssue({
+          path: ["pantLong"],
+          message: "Pant length is required for stitched product",
+          code: z.ZodIssueCode.custom,
+        });
+      }
+    }
 
-  /* ================= MEASUREMENTS ================= */
-  body: z.string().optional(),
-  long: z.string().optional(),
-  pantLong: z.string().optional(),
-  innerAndSalwar: z.string().optional(),
-  liveLink: z.string().url("Invalid URL").optional(),
+    /* ================= UNSTITCH ================= */
+    if (data.stitchType === "UNSTITCH") {
+      // body required
+      if (!data.body) {
+        ctx.addIssue({
+          path: ["body"],
+          message: "Body measurement is required for unstitch product",
+          code: z.ZodIssueCode.custom,
+        });
+      }
 
-  /* ================= CONTENT ================= */
-  description: z.any(), // Rich text
-  instruction: z.any().optional(),
-  videoUrl: z.any().optional(),
-
-  /* ================= SEO ================= */
-  seoTitle: z.string().max(70, "Meta title max 70 characters").optional(),
-
-  seoDescription: z
-    .string()
-    .max(160, "Meta description max 160 characters")
-    .optional(),
-});
-export type Product = z.infer<typeof productSchema>;
+      // inner & salwar required
+      if (!data.innerAndSalwar) {
+        ctx.addIssue({
+          path: ["innerAndSalwar"],
+          message: "Inner & Salwar is required for unstitch product",
+          code: z.ZodIssueCode.custom,
+        });
+      }
+    }
+  });
 
 export type ProductSchema = z.infer<typeof productSchema>;

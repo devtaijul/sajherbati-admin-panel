@@ -10,7 +10,7 @@ import SelectInput from "../components/SelectInput";
 import SimpleInput from "../components/SimpleInput";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
@@ -19,25 +19,48 @@ import SwitchToggle from "../components/SwitchToggle";
 import ColorPicker from "../components/ColorPicker";
 import KeywordInput from "../components/KeywordInput";
 import React from "react";
+import SizeSelector from "../components/SizeSelector";
 
 const CreateProduct = () => {
   const {
     register,
     handleSubmit,
     setValue,
+    control,
     watch,
     formState: { errors },
   } = useForm({
     resolver: zodResolver(productSchema),
+    defaultValues: {
+      displayPriority: "0",
+      isTopSelling: false,
+      newArrival: false,
+      isCustomeRelation: false,
+      sizes: [],
+      inStock: true,
+      stitchType: "STITCH",
+    },
   });
   const [featuredImage, setFeaturedImage] = React.useState<string[]>([]);
   const [galleryImages, setGalleryImages] = React.useState<string[]>([]);
 
   const stitchType = watch("stitchType");
+  const displayPriority = watch("displayPriority");
 
   const onSubmit = (data: ProductSchema) => {
     console.log("PRODUCT DATA 👉", data);
+    console.log("FEATURED IMAGE 👉", featuredImage);
+    console.log("GALLERY IMAGES 👉", galleryImages);
+    const variables = {
+      ...data,
+      featuredImage: featuredImage[0],
+      galleryImages,
+    };
+    console.log("variables", variables);
   };
+
+  console.log("errors", errors);
+  console.log("watch", watch());
 
   return (
     <div className="flex h-auto border-t border-blackSecondary dark:bg-blackPrimary bg-whiteSecondary">
@@ -79,7 +102,10 @@ const CreateProduct = () => {
 
             <InputWithLabel label="Category">
               <SelectInput
-                {...register("categoryId")}
+                defaultValue="categoryId"
+                onChange={(event) => {
+                  setValue("categoryId", event.target.value);
+                }}
                 selectList={[
                   { value: "1", label: "Category 1" },
                   { value: "2", label: "Category 2" },
@@ -90,7 +116,14 @@ const CreateProduct = () => {
             {/* Stitch Type */}
             <InputWithLabel label="Product Type">
               <SelectInput
-                {...register("stitchType")}
+                value={stitchType}
+                defaultValue="STITCH"
+                onChange={(event) => {
+                  setValue(
+                    "stitchType",
+                    event.target.value as "STITCH" | "UNSTITCH"
+                  );
+                }}
                 selectList={[
                   { value: "STITCH", label: "Stitch" },
                   { value: "UNSTITCH", label: "Unstitch" },
@@ -113,7 +146,11 @@ const CreateProduct = () => {
 
             <div className="grid grid-cols-2 gap-5">
               <InputWithLabel label="Base price">
-                <SimpleInput type="number" {...register("regularPrice")} />
+                <SimpleInput
+                  type="number"
+                  {...register("regularPrice")}
+                  min={0}
+                />
               </InputWithLabel>
 
               <InputWithLabel label="Discount price">
@@ -122,28 +159,40 @@ const CreateProduct = () => {
             </div>
 
             <div className="grid grid-cols-2 gap-5">
-              <InputWithLabel label="Stock">
-                <SelectInput
-                  {...register("categoryId")}
-                  selectList={[
-                    { value: "1", label: "In Stock" },
-                    { value: "0", label: "Out of Stock" },
-                  ]}
-                />
-              </InputWithLabel>
-
               <InputWithLabel label="SKU">
                 <SimpleInput {...register("sku")} />
               </InputWithLabel>
             </div>
+
+            {watch("stitchType") === "STITCH" && (
+              <div>
+                <Controller
+                  name="sizes"
+                  control={control}
+                  defaultValue={[]}
+                  render={({ field }) => (
+                    <SizeSelector
+                      value={field.value}
+                      onChange={field.onChange}
+                    />
+                  )}
+                />
+                {errors.sizes && (
+                  <p className="error">{errors.sizes.message}</p>
+                )}
+              </div>
+            )}
+
             <h3 className="mt-16 section-title">Additional Details</h3>
 
             <div className="flex flex-col gap-6">
               {/* Switches */}
+
               <SwitchToggle
                 label="Top Selling"
                 register={register("isTopSelling")}
               />
+
               <SwitchToggle
                 label="New Arrival"
                 register={register("newArrival")}
@@ -167,12 +216,16 @@ const CreateProduct = () => {
               {/* Display Priority */}
               <InputWithLabel label="Display Priority">
                 <SelectInput
-                  {...register("displayPriority")}
+                  value={displayPriority}
+                  defaultValue={displayPriority}
+                  onChange={(event) => {
+                    setValue("displayPriority", event.target.value);
+                  }}
                   selectList={[
                     { label: "Default (0)", value: "0" },
                     ...Array.from({ length: 20 }).map((_, i) => ({
-                      label: String(i + 1),
-                      value: String(i + 1),
+                      label: `${i + 1}`,
+                      value: `${i + 1}`,
                     })),
                   ]}
                 />
@@ -187,21 +240,36 @@ const CreateProduct = () => {
               </InputWithLabel>
 
               {/* Measurements */}
-              <InputWithLabel label="Body">
-                <SimpleInput {...register("body")} />
+              {stitchType === "UNSTITCH" && (
+                <InputWithLabel label="Body">
+                  <SimpleInput {...register("body")} />
+                  {errors.body && (
+                    <p className="error">{errors.body.message}</p>
+                  )}
+                </InputWithLabel>
+              )}
+
+              <InputWithLabel label="Kamiz Length">
+                <SimpleInput {...register("kamizLong")} />
               </InputWithLabel>
 
-              <InputWithLabel label="Length">
-                <SimpleInput {...register("long")} />
-              </InputWithLabel>
+              {stitchType === "STITCH" && (
+                <InputWithLabel label="Pant Length">
+                  <SimpleInput {...register("pantLong")} />
+                  {errors.pantLong && (
+                    <p className="error">{errors.pantLong.message}</p>
+                  )}
+                </InputWithLabel>
+              )}
 
-              <InputWithLabel label="Pant Length">
-                <SimpleInput {...register("pantLong")} />
-              </InputWithLabel>
-
-              <InputWithLabel label="Inner & Salwar">
-                <SimpleInput {...register("innerAndSalwar")} />
-              </InputWithLabel>
+              {stitchType === "UNSTITCH" && (
+                <InputWithLabel label="Inner & Salwar">
+                  <SimpleInput {...register("innerAndSalwar")} />
+                  {errors.innerAndSalwar && (
+                    <p className="error">{errors.innerAndSalwar.message}</p>
+                  )}
+                </InputWithLabel>
+              )}
 
               <InputWithLabel label="Live Link">
                 <SimpleInput {...register("liveLink")} />
@@ -209,7 +277,7 @@ const CreateProduct = () => {
 
               {/* Video */}
               <InputWithLabel label="Product Video">
-                <SimpleInput {...register("liveLink")} />
+                <SimpleInput {...register("videoUrl")} />
               </InputWithLabel>
 
               <InputWithLabel label="Description">
@@ -297,6 +365,14 @@ const CreateProduct = () => {
               }}
               label="Featured Image"
               selectedImageIds={featuredImage}
+              previewPosition="outside"
+            />
+            <ImageUpload
+              onSelect={(value) => {
+                setGalleryImages(value);
+              }}
+              label="Gallery Images"
+              selectedImageIds={galleryImages}
               previewPosition="outside"
             />
           </div>
