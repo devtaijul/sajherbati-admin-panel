@@ -52,3 +52,21 @@ export interface PaginatedResponse<T> {
     pages: number;
   };
 }
+
+export type Category = {
+  id: string;
+  title: string;
+  slug: string;
+  description: string | null;
+  featuredImageId: string | null;
+  seoTitle: string | null;
+  seoDescription: string | null;
+  parentId: string | null;
+  createdAt: Date;
+  updatedAt: Date;
+};
+
+export type CategoryInput = Omit<
+  Category,
+  "id" | "createdAt" | "updatedAt" | "children"
+>;

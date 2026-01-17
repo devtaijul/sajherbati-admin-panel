@@ -97,3 +97,27 @@ export const productSchema = z
   });
 
 export type ProductSchema = z.infer<typeof productSchema>;
+
+export const categorySchema = z.object({
+  title: z
+    .string()
+    .min(2, "Category title is required")
+    .max(100, "Title too long"),
+
+  description: z.string().optional(),
+
+  slug: z
+    .string()
+    .min(2, "Slug is required")
+    .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, "Invalid slug format"),
+
+  parentCategoryId: z.string().optional(),
+
+  featuredImage: z.string().optional(),
+
+  seoTitle: z.string().max(70, "Max 70 characters").optional(),
+
+  seoDescription: z.string().max(160, "Max 160 characters").optional(),
+});
+
+export type CategorySchema = z.infer<typeof categorySchema>;

@@ -55,3 +55,7 @@ html.dark .ql-snow .ql-toolbar button {
 .ql-editor {
   min-height: 150px;
 }
+
+.error {
+  color: red;
+}

@@ -1,6 +1,8 @@
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
 import { AiOutlineSave } from "react-icons/ai";
 import { HiOutlineSave } from "react-icons/hi";
-import { Link } from "react-router-dom";
 import {
   ImageUpload,
   InputWithLabel,
@@ -8,17 +10,72 @@ import {
   SimpleInput,
   TextAreaInput,
 } from "../components";
-import SelectInput from "../components/SelectInput";
-import { selectList } from "../utils/data";
-import { useState } from "react";
+import { FlatCategory } from "../components/FlatCategory";
+import { categorySchema, CategorySchema } from "../utils/validation";
+import { useMutation } from "@tanstack/react-query";
+import { createCategoryMutation } from "../resolvers/mutation";
+import { CategoryInput } from "../vite-env";
 
 const CreateCategory = () => {
   const [selectedImageIds, setSelectedImageIds] = useState<string[]>([]);
+
+  const {
+    register,
+    handleSubmit,
+    reset,
+    setValue,
+    watch,
+    formState: { errors },
+  } = useForm<CategorySchema>({
+    resolver: zodResolver(categorySchema),
+    defaultValues: {
+      title: "",
+      description: "",
+      slug: "",
+      parentCategoryId: "",
+      seoTitle: "",
+      seoDescription: "",
+    },
+  });
+
+  const { mutate, isPending } = useMutation({
+    mutationKey: ["create-category"],
+    mutationFn: createCategoryMutation,
+  });
+
+  const onSubmit = (data: CategorySchema) => {
+    const payload = {
+      ...data,
+      featuredImageId: selectedImageIds[0],
+      parentId: data.parentCategoryId || null,
+    };
+
+    console.log("CATEGORY DATA 👉", payload);
+
+    mutate(
+      {
+        category: payload,
+      },
+      {
+        onSuccess: () => {
+          reset();
+          setSelectedImageIds([]);
+        },
+        onError: (error: any) => {
+          console.error("Failed to create category:", error);
+        },
+      },
+    );
+  };
+
   return (
     <div className="flex h-auto border-t border-blackSecondary border-1 dark:bg-blackPrimary bg-whiteSecondary">
       <Sidebar />
       <div className="w-full dark:bg-blackPrimary bg-whiteSecondary ">
-        <div className="py-10 dark:bg-blackPrimary bg-whiteSecondary">
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          className="py-10 dark:bg-blackPrimary bg-whiteSecondary"
+        >
           <div className="flex items-center justify-between px-4 pb-8 border-b border-gray-800 sm:px-6 lg:px-8 max-sm:flex-col max-sm:gap-5">
             <div className="flex flex-col gap-3">
               <h2 className="text-3xl font-bold leading-7 dark:text-whiteSecondary text-blackPrimary">
@@ -32,15 +89,12 @@ const CreateCategory = () => {
                   Save draft
                 </span>
               </button>
-              <Link
-                to="/categories/add-category"
-                className="flex items-center justify-center w-48 py-2 text-lg duration-200 dark:bg-whiteSecondary bg-blackPrimary dark:hover:bg-white hover:bg-black gap-x-2"
-              >
+              <button className="flex items-center justify-center w-48 py-2 text-lg duration-200 dark:bg-whiteSecondary bg-blackPrimary dark:hover:bg-white hover:bg-black gap-x-2">
                 <HiOutlineSave className="text-xl dark:hover:text-blackPrimary hover:text-whiteSecondary dark:text-blackPrimary text-whiteSecondary" />
                 <span className="font-semibold dark:text-blackPrimary text-whiteSecondary">
                   Publish category
                 </span>
-              </Link>
+              </button>
             </div>
           </div>
 
@@ -55,47 +109,47 @@ const CreateCategory = () => {
               <div className="flex flex-col gap-5 mt-4">
                 <InputWithLabel label="Category title">
                   <SimpleInput
-                    type="text"
                     placeholder="Enter a category title..."
+                    {...register("title")}
                   />
+                  {errors.title && (
+                    <p className="error">{errors.title.message}</p>
+                  )}
                 </InputWithLabel>
 
                 <InputWithLabel label="Category description">
                   <TextAreaInput
                     placeholder="Enter a category description..."
                     rows={4}
-                    cols={50}
+                    {...register("description")}
                   />
                 </InputWithLabel>
 
                 <InputWithLabel label="Category slug">
                   <SimpleInput
-                    type="text"
-                    placeholder="Enter a category slug..."
+                    placeholder="enter-category-slug"
+                    {...register("slug")}
                   />
+                  {errors.slug && (
+                    <p className="error">{errors.slug.message}</p>
+                  )}
                 </InputWithLabel>
 
-                <InputWithLabel label="Parent category (optional)">
-                  <SelectInput selectList={selectList} />
-                </InputWithLabel>
+                <FlatCategory
+                  selectedCategoryId={watch("parentCategoryId")}
+                  onChange={(e) => setValue("parentCategoryId", e.target.value)}
+                />
               </div>
               <h3 className="mt-16 text-2xl font-bold leading-7 dark:text-whiteSecondary text-blackPrimary">
                 SEO
               </h3>
               <div className="flex flex-col gap-5 mt-4">
                 <InputWithLabel label="Meta title">
-                  <SimpleInput
-                    type="text"
-                    placeholder="Enter a meta title..."
-                  />
+                  <SimpleInput {...register("seoTitle")} />
                 </InputWithLabel>
 
                 <InputWithLabel label="Meta description">
-                  <TextAreaInput
-                    placeholder="Enter a meta description..."
-                    rows={4}
-                    cols={50}
-                  />
+                  <TextAreaInput rows={4} {...register("seoDescription")} />
                 </InputWithLabel>
               </div>
             </div>
@@ -108,13 +162,13 @@ const CreateCategory = () => {
 
               <ImageUpload
                 selectedImageIds={selectedImageIds}
-                onSelect={(mediaIds: string[]) => setSelectedImageIds(mediaIds)}
+                onSelect={(ids) => setSelectedImageIds(ids)}
                 showPreview
                 label="Featured Image"
               />
             </div>
           </div>
-        </div>
+        </form>
       </div>
     </div>
   );
