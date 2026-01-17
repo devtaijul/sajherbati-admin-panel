@@ -3,7 +3,6 @@ import { AiOutlineSave } from "react-icons/ai";
 import { HiOutlineSave } from "react-icons/hi";
 import { Link } from "react-router-dom";
 import {
-  ImageUpload,
   InputWithLabel,
   Sidebar,
   SimpleInput,
@@ -149,7 +148,7 @@ const EditCategory = () => {
                 Category image
               </h3>
 
-              <ImageUpload />
+              {/* <ImageUpload /> */}
 
               <div className="flex flex-wrap justify-center mt-5 gap-x-2">
                 <img

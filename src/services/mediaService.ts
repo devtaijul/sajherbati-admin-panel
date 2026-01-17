@@ -24,14 +24,14 @@ export const mediaService = {
   // Upload media
   uploadMedia: async (
     file: File,
-    onProgress?: (progressEvent: any) => void
+    onProgress?: (progressEvent: any) => void,
   ): Promise<UploadResponse> => {
     const formData = new FormData();
     formData.append("file", file);
 
     const response = await apiHelper.post<UploadResponse>(
       "/media/upload",
-      formData
+      formData,
     );
     return response;
   },
@@ -45,32 +45,32 @@ export const mediaService = {
   // Update media info
   updateMedia: async (
     id: string,
-    data: Partial<Media>
+    data: Partial<Media>,
   ): Promise<ApiResponse<Media>> => {
     const response = await apiHelper.put<ApiResponse<Media>>(
       `/media/${id}`,
-      data
+      data,
     );
     return response;
   },
 
   // Get connections for a media
   getConnections: async (
-    mediaId: string
+    mediaId: string,
   ): Promise<ApiResponse<MediaConnection[]>> => {
     const response = await apiHelper.get<ApiResponse<MediaConnection[]>>(
-      `/media/${mediaId}/connections`
+      `/media/${mediaId}/connections`,
     );
     return response;
   },
 
   // Connect media to entity
   connectMedia: async (
-    data: Omit<MediaConnection, "id">
+    data: Omit<MediaConnection, "id">,
   ): Promise<ApiResponse<MediaConnection>> => {
     const response = await apiHelper.post<ApiResponse<MediaConnection>>(
       "/media/connections",
-      data
+      data,
     );
     return response;
   },
@@ -78,7 +78,7 @@ export const mediaService = {
   // Disconnect media
   disconnectMedia: async (connectionId: string): Promise<ApiResponse> => {
     const response = await apiHelper.delete<ApiResponse>(
-      `/media/connections/${connectionId}`
+      `/media/connections/${connectionId}`,
     );
     return response;
   },
@@ -87,7 +87,7 @@ export const mediaService = {
   searchMedia: async (query: string): Promise<ApiResponse<Media[]>> => {
     const response = await apiHelper.get<ApiResponse<Media[]>>(
       "/media/search",
-      { params: { q: query } }
+      { params: { q: query } },
     );
     return response;
   },
@@ -95,7 +95,7 @@ export const mediaService = {
   // Bulk upload multiple files
   uploadMultiple: async (
     files: File[],
-    onProgress?: (progressEvent: any) => void
+    onProgress?: (progressEvent: any) => void,
   ): Promise<ApiResponse<Media[]>> => {
     const formData = new FormData();
     files.forEach((file, index) => {
@@ -104,7 +104,7 @@ export const mediaService = {
 
     const response = await apiHelper.post<ApiResponse<Media[]>>(
       "/media/upload-multiple",
-      formData
+      formData,
     );
     return response;
   },

@@ -1,5 +1,5 @@
 interface SizeSelectorProps {
-  value: string[];
+  value: string[] | undefined;
   onChange: (value: string[]) => void;
   sizes?: string[];
 }

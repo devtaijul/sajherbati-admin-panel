@@ -15,7 +15,7 @@ import {
 
 export const useMedia = (
   params?: { page?: number; limit?: number; search?: string },
-  options?: UseQueryOptions<PaginatedResponse<Media>>
+  options?: UseQueryOptions<PaginatedResponse<Media>>,
 ) => {
   return useQuery<PaginatedResponse<Media>>({
     queryKey: ["media", params],
@@ -62,7 +62,7 @@ export const useUpdateMedia = () => {
         return {
           ...old,
           data: old.data.map((media: Media) =>
-            media.id === variables.id ? { ...media, ...response.data } : media
+            media.id === variables.id ? { ...media, ...response.data } : media,
           ),
         };
       });
@@ -84,6 +84,7 @@ export const useConnectMedia = () => {
   return useMutation({
     mutationFn: mediaService.connectMedia,
     onSuccess: (response, variables) => {
+      console.log(response);
       queryClient.invalidateQueries({
         queryKey: ["media-connections", variables.mediaId],
       });

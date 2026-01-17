@@ -1,11 +1,10 @@
 import React, { useState } from "react";
-import { useMedia, useUploadMedia, useDeleteMedia } from "../hooks/useMedia";
+import { useDeleteMedia, useMedia, useUploadMedia } from "../hooks/useMedia";
 
-import MediaGrid from "./MediaGrid";
-import MediaConnections from "./MediaConnections";
-import MediaUpload from "./MediaUpload";
 import { Media } from "../vite-env";
 import MediaDetails from "./MediaDetails";
+import MediaGrid from "./MediaGrid";
+import MediaUpload from "./MediaUpload";
 
 const MediaLibrary: React.FC = () => {
   const [selectedMedia, setSelectedMedia] = useState<Media | null>(null);
@@ -125,7 +124,6 @@ const MediaLibrary: React.FC = () => {
           {selectedMedia ? (
             <>
               <MediaDetails media={selectedMedia} onUpdate={() => refetch()} />
-              <MediaConnections mediaId={selectedMedia.id} />
             </>
           ) : (
             <div className="p-6 text-center rounded-lg bg-gray-50">

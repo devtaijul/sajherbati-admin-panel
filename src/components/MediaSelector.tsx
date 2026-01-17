@@ -1,5 +1,5 @@
 // components/MediaSelector.tsx (Updated)
-import React, { useState, useEffect, useRef } from "react";
+import React, { useRef, useState } from "react";
 import { useMedia, useUploadMedia } from "../hooks/useMedia";
 import { Media } from "../vite-env";
 import SelectedMediaPreview from "./SelectedMediaPreview";
@@ -9,7 +9,6 @@ interface MediaSelectorProps {
   selectedMedia?: string[];
   multiple?: boolean;
   maxSelection?: number;
-  connectionType?: string;
   showPreview?: boolean; // নতুন prop: preview দেখাবে কিনা
   previewPosition?: "inside" | "outside"; // preview কোথায় দেখাবে
 }
@@ -19,7 +18,6 @@ const MediaSelector: React.FC<MediaSelectorProps> = ({
   selectedMedia = [],
   multiple = true,
   maxSelection = 10,
-  connectionType = "gallery",
   showPreview = true,
   previewPosition = "outside", // Default: modal-এর বাইরে
 }) => {
@@ -307,7 +305,7 @@ const MediaSelector: React.FC<MediaSelectorProps> = ({
                   <div className="flex gap-2 pb-2 overflow-x-auto">
                     {selectedIds.slice(0, 8).map((id, index) => {
                       const media = mediaData?.data?.find(
-                        (m: Media) => m.id === id
+                        (m: Media) => m.id === id,
                       );
                       return media ? (
                         <div key={id} className="relative flex-shrink-0">
@@ -408,17 +406,17 @@ const MediaSelector: React.FC<MediaSelectorProps> = ({
               <div className="text-sm text-gray-600 dark:text-gray-300">
                 {selectedIds.length} image{selectedIds.length !== 1 ? "s" : ""}{" "}
                 selected • Total size:{" "}
-                {(
+                {/* {(
                   mediaData?.data
                     ?.filter((m: Media) => selectedIds.includes(m.id))
                     .reduce(
                       (acc: number, media: Media) => acc + media.size,
-                      0
+                      0,
                     ) /
                   1024 /
                   1024
                 ).toFixed(2)}{" "}
-                MB
+                MB */}
               </div>
               <div className="flex gap-3">
                 <button

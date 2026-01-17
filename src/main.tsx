@@ -1,16 +1,10 @@
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import React from "react";
 import ReactDOM from "react-dom/client";
+import { Provider } from "react-redux";
 import App from "./App.tsx";
 import "./index.css";
 import { store } from "./store.ts";
-import { Provider } from "react-redux";
-import {
-  useQuery,
-  useMutation,
-  useQueryClient,
-  QueryClient,
-  QueryClientProvider,
-} from "@tanstack/react-query";
 
 // Create a client
 const queryClient = new QueryClient();
@@ -22,5 +16,5 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
         <App />
       </Provider>
     </QueryClientProvider>
-  </React.StrictMode>
+  </React.StrictMode>,
 );

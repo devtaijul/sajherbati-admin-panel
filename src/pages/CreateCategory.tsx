@@ -10,8 +10,10 @@ import {
 } from "../components";
 import SelectInput from "../components/SelectInput";
 import { selectList } from "../utils/data";
+import { useState } from "react";
 
 const CreateCategory = () => {
+  const [selectedImageIds, setSelectedImageIds] = useState<string[]>([]);
   return (
     <div className="flex h-auto border-t border-blackSecondary border-1 dark:bg-blackPrimary bg-whiteSecondary">
       <Sidebar />
@@ -104,7 +106,12 @@ const CreateCategory = () => {
                 Category image
               </h3>
 
-              <ImageUpload />
+              <ImageUpload
+                selectedImageIds={selectedImageIds}
+                onSelect={(mediaIds: string[]) => setSelectedImageIds(mediaIds)}
+                showPreview
+                label="Featured Image"
+              />
             </div>
           </div>
         </div>

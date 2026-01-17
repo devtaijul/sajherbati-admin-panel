@@ -31,7 +31,7 @@ api.interceptors.request.use(
   },
   (error) => {
     return Promise.reject(error);
-  }
+  },
 );
 
 // Response interceptor - response হ্যান্ডল করার জন্য
@@ -73,7 +73,7 @@ api.interceptors.response.use(
     }
 
     return Promise.reject(error);
-  }
+  },
 );
 
 // Helper functions for common HTTP methods
@@ -97,7 +97,7 @@ const apiHelper = {
   upload: (
     url: string,
     formData: FormData,
-    onProgress?: (progressEvent: any) => void
+    onProgress?: (progressEvent: any) => void,
   ) => {
     return api
       .post(url, formData, {

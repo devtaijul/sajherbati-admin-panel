@@ -1,12 +1,12 @@
-import { ImageUpload, InputWithLabel, Sidebar } from "../components";
+import { useState } from "react";
+import { AiOutlineSave } from "react-icons/ai";
 import { HiOutlineSave } from "react-icons/hi";
 import { Link } from "react-router-dom";
-import { AiOutlineSave } from "react-icons/ai";
+import { InputWithLabel, Sidebar } from "../components";
+import SelectInput from "../components/SelectInput";
 import SimpleInput from "../components/SimpleInput";
 import TextAreaInput from "../components/TextAreaInput";
-import SelectInput from "../components/SelectInput";
 import { selectList, stockStatusList } from "../utils/data";
-import { useState } from "react";
 
 const EditProduct = () => {
   const [inputObject, setInputObject] = useState({
@@ -26,31 +26,30 @@ const EditProduct = () => {
     metaDescription: "Samsung Galaxy Tab A7 Lite - Demo Description",
   });
 
-
   return (
-    <div className="h-auto border-t border-blackSecondary border-1 flex dark:bg-blackPrimary bg-whiteSecondary">
+    <div className="flex h-auto border-t border-blackSecondary border-1 dark:bg-blackPrimary bg-whiteSecondary">
       <Sidebar />
-      <div className="dark:bg-blackPrimary bg-whiteSecondary w-full ">
-        <div className="dark:bg-blackPrimary bg-whiteSecondary py-10">
-          <div className="px-4 sm:px-6 lg:px-8 pb-8 border-b border-gray-800 flex justify-between items-center max-sm:flex-col max-sm:gap-5">
+      <div className="w-full dark:bg-blackPrimary bg-whiteSecondary ">
+        <div className="py-10 dark:bg-blackPrimary bg-whiteSecondary">
+          <div className="flex items-center justify-between px-4 pb-8 border-b border-gray-800 sm:px-6 lg:px-8 max-sm:flex-col max-sm:gap-5">
             <div className="flex flex-col gap-3">
               <h2 className="text-3xl font-bold leading-7 dark:text-whiteSecondary text-blackPrimary">
                 Edit product
               </h2>
             </div>
             <div className="flex gap-x-2 max-[370px]:flex-col max-[370px]:gap-2 max-[370px]:items-center">
-              <button className="dark:bg-blackPrimary bg-whiteSecondary border border-gray-600 w-48 py-2 text-lg dark:hover:border-gray-500 hover:border-gray-400 duration-200 flex items-center justify-center gap-x-2">
-                <AiOutlineSave className="dark:text-whiteSecondary text-blackPrimary text-xl" />
-                <span className="dark:text-whiteSecondary text-blackPrimary font-medium">
+              <button className="flex items-center justify-center w-48 py-2 text-lg duration-200 border border-gray-600 dark:bg-blackPrimary bg-whiteSecondary dark:hover:border-gray-500 hover:border-gray-400 gap-x-2">
+                <AiOutlineSave className="text-xl dark:text-whiteSecondary text-blackPrimary" />
+                <span className="font-medium dark:text-whiteSecondary text-blackPrimary">
                   Save draft
                 </span>
               </button>
               <Link
                 to="/products/add-product"
-                className="dark:bg-whiteSecondary bg-blackPrimary w-48 py-2 text-lg dark:hover:bg-white hover:bg-blackSecondary duration-200 flex items-center justify-center gap-x-2"
+                className="flex items-center justify-center w-48 py-2 text-lg duration-200 dark:bg-whiteSecondary bg-blackPrimary dark:hover:bg-white hover:bg-blackSecondary gap-x-2"
               >
-                <HiOutlineSave className="dark:text-blackPrimary text-whiteSecondary text-xl" />
-                <span className="dark:text-blackPrimary text-whiteSecondary font-semibold">
+                <HiOutlineSave className="text-xl dark:text-blackPrimary text-whiteSecondary" />
+                <span className="font-semibold dark:text-blackPrimary text-whiteSecondary">
                   Update product
                 </span>
               </Link>
@@ -58,14 +57,14 @@ const EditProduct = () => {
           </div>
 
           {/* Add Product section here  */}
-          <div className="px-4 sm:px-6 lg:px-8 pb-8 pt-8 grid grid-cols-2 gap-x-10 max-xl:grid-cols-1 max-xl:gap-y-10">
+          <div className="grid grid-cols-2 px-4 pt-8 pb-8 sm:px-6 lg:px-8 gap-x-10 max-xl:grid-cols-1 max-xl:gap-y-10">
             {/* left div */}
             <div>
               <h3 className="text-2xl font-bold leading-7 dark:text-whiteSecondary text-blackPrimary">
                 Basic information
               </h3>
 
-              <div className="mt-4 flex flex-col gap-5">
+              <div className="flex flex-col gap-5 mt-4">
                 <InputWithLabel label="Title">
                   <SimpleInput
                     type="text"
@@ -106,11 +105,11 @@ const EditProduct = () => {
                 </InputWithLabel>
               </div>
 
-              <h3 className="text-2xl font-bold leading-7 dark:text-whiteSecondary text-blackPrimary mt-16">
+              <h3 className="mt-16 text-2xl font-bold leading-7 dark:text-whiteSecondary text-blackPrimary">
                 Pricing & Inventory
               </h3>
 
-              <div className="mt-4 flex flex-col gap-5">
+              <div className="flex flex-col gap-5 mt-4">
                 <div className="grid grid-cols-2 gap-x-5 max-[500px]:grid-cols-1 max-[500px]:gap-x-0 max-[500px]:gap-y-5">
                   <InputWithLabel label="Base pricing">
                     <SimpleInput
@@ -184,11 +183,11 @@ const EditProduct = () => {
                 </InputWithLabel>
               </div>
 
-              <h3 className="text-2xl font-bold leading-7 dark:text-whiteSecondary text-blackPrimary mt-16">
+              <h3 className="mt-16 text-2xl font-bold leading-7 dark:text-whiteSecondary text-blackPrimary">
                 Delivery
               </h3>
 
-              <div className="mt-4 flex flex-col gap-5">
+              <div className="flex flex-col gap-5 mt-4">
                 <div className="grid grid-cols-2 gap-x-5 gap-y-5 max-[500px]:grid-cols-1 max-[500px]:gap-x-0 max-[500px]:gap-y-5">
                   <InputWithLabel label="Weight (kg)">
                     <SimpleInput
@@ -245,22 +244,22 @@ const EditProduct = () => {
                 </div>
               </div>
               <div>
-                <h3 className="text-2xl font-bold leading-7 dark:text-whiteSecondary text-blackPrimary mt-16">
+                <h3 className="mt-16 text-2xl font-bold leading-7 dark:text-whiteSecondary text-blackPrimary">
                   SEO
                 </h3>
 
-                <div className="mt-4 flex flex-col gap-5">
+                <div className="flex flex-col gap-5 mt-4">
                   <InputWithLabel label="Meta title">
                     <SimpleInput
                       type="text"
                       placeholder="Enter a meta title..."
                       value={inputObject.metaTitle}
-                        onChange={(e) =>
-                            setInputObject({
-                            ...inputObject,
-                            metaTitle: e.target.value,
-                            })
-                        }
+                      onChange={(e) =>
+                        setInputObject({
+                          ...inputObject,
+                          metaTitle: e.target.value,
+                        })
+                      }
                     />
                   </InputWithLabel>
 
@@ -270,19 +269,17 @@ const EditProduct = () => {
                       rows={4}
                       cols={50}
                       value={inputObject.metaDescription}
-                        onChange={(e) =>
-                            setInputObject({
-                            ...inputObject,
-                            metaDescription: e.target.value,
-                            })
-                        }
+                      onChange={(e) =>
+                        setInputObject({
+                          ...inputObject,
+                          metaDescription: e.target.value,
+                        })
+                      }
                     />
                   </InputWithLabel>
                 </div>
               </div>
             </div>
-
-            
 
             {/* right div */}
             <div>
@@ -290,12 +287,28 @@ const EditProduct = () => {
                 Product images
               </h3>
 
-              <ImageUpload />
-              <div className="flex justify-center gap-x-2 mt-5 flex-wrap">
-                <img src='/src/assets/tablet (1).jpg' alt='' className="w-36 h-32"/>
-                <img src="/src/assets/tablet (2).jpg" alt="" className="w-36 h-32" />
-                <img src='/src/assets/tablet (3).jpg' alt='' className="w-36 h-32"/>
-                <img src="/src/assets/tablet (4).jpg" alt="" className="w-36 h-32" />
+              {/* <ImageUpload /> */}
+              <div className="flex flex-wrap justify-center mt-5 gap-x-2">
+                <img
+                  src="/src/assets/tablet (1).jpg"
+                  alt=""
+                  className="h-32 w-36"
+                />
+                <img
+                  src="/src/assets/tablet (2).jpg"
+                  alt=""
+                  className="h-32 w-36"
+                />
+                <img
+                  src="/src/assets/tablet (3).jpg"
+                  alt=""
+                  className="h-32 w-36"
+                />
+                <img
+                  src="/src/assets/tablet (4).jpg"
+                  alt=""
+                  className="h-32 w-36"
+                />
               </div>
             </div>
           </div>
