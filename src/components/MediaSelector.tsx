@@ -1,5 +1,5 @@
 // components/MediaSelector.tsx (Updated)
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useMedia, useUploadMedia } from "../hooks/useMedia";
 import { Media } from "../vite-env";
 import SelectedMediaPreview from "./SelectedMediaPreview";
@@ -26,6 +26,8 @@ const MediaSelector: React.FC<MediaSelectorProps> = ({
   const [selectedIds, setSelectedIds] = useState<string[]>(selectedMedia);
   const [uploading, setUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  console.log("SEleected", selectedIds);
 
   const {
     data: mediaData,
@@ -123,6 +125,10 @@ const MediaSelector: React.FC<MediaSelectorProps> = ({
       setUploading(false);
     }
   };
+
+  useEffect(() => {
+    selectedMedia && setSelectedIds(selectedMedia);
+  }, [selectedMedia]);
 
   return (
     <div className="space-y-4">

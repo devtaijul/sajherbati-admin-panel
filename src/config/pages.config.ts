@@ -2,7 +2,7 @@ export const PAGES = {
   home: "/",
   CATEGORY: {
     ROOT: "/category",
-    EDIT: (id: string) => `/category/${id}`,
+    EDIT: (id: string) => `/categories/${id}`,
     CREATE: "/category/create-category",
   },
   PRODUCT: {

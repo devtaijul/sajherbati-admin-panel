@@ -1,167 +1,171 @@
-import { useState } from "react";
-import { AiOutlineSave } from "react-icons/ai";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import { useParams } from "react-router-dom";
 import { HiOutlineSave } from "react-icons/hi";
-import { Link } from "react-router-dom";
+
 import {
+  ImageUpload,
   InputWithLabel,
   Sidebar,
   SimpleInput,
   TextAreaInput,
 } from "../components";
-import SelectInput from "../components/SelectInput";
-import { selectList } from "../utils/data";
+import { FlatCategory } from "../components/FlatCategory";
+import { categorySchema, CategorySchema } from "../utils/validation";
+import { getCategoryById } from "../services/category.api";
+import { updateCategoryMutation } from "../resolvers/mutation";
 
 const EditCategory = () => {
-  const [inputObject, setInputObject] = useState({
-    title: "PC",
-    description: "This is a category for all computers.",
-    slug: "pc",
-    parentCategory: "",
-    metaTitle: "PC category",
-    metaDescription: "This is a category for all computers.",
+  const { id } = useParams<{ id: string }>();
+  const [selectedImageIds, setSelectedImageIds] = useState<string[]>([]);
+  console.log("selectedImagId", selectedImageIds);
+
+  const {
+    register,
+    handleSubmit,
+    reset,
+    setValue,
+    watch,
+    formState: { errors },
+  } = useForm<CategorySchema>({
+    resolver: zodResolver(categorySchema),
   });
 
+  /* ================= GET CATEGORY ================= */
+  const { isLoading: isFetching, data: existingCategory } = useQuery({
+    queryKey: ["category", id],
+    enabled: !!id,
+    queryFn: () => getCategoryById(id!),
+  });
+
+  /* ================= PREFILL FORM ================= */
+  useEffect(() => {
+    if (!existingCategory?.data) return;
+
+    const c = existingCategory.data;
+
+    reset({
+      title: c.title,
+      description: c.description ?? "",
+      slug: c.slug,
+      parentCategoryId: c.parentId ?? "",
+      seoTitle: c.seoTitle ?? "",
+      seoDescription: c.seoDescription ?? "",
+    });
+
+    if (c.featuredImageId) {
+      setSelectedImageIds([c.featuredImageId]);
+    }
+  }, [existingCategory, reset]);
+
+  /* ================= UPDATE CATEGORY ================= */
+  const { mutate, isPending } = useMutation({
+    mutationKey: ["update-category", id],
+    mutationFn: updateCategoryMutation,
+  });
+
+  const onSubmit = (data: CategorySchema) => {
+    const payload = {
+      ...data,
+      parentId: data.parentCategoryId || null,
+      featuredImageId: selectedImageIds[0] || null,
+    };
+
+    mutate(
+      { id: id!, category: payload },
+      {
+        onSuccess: () => {
+          console.log("Category updated successfully");
+        },
+      },
+    );
+  };
+
+  if (isFetching) return <p className="p-5">Loading...</p>;
+
   return (
-    <div className="flex h-auto border-t border-blackSecondary border-1 dark:bg-blackPrimary bg-whiteSecondary">
+    <div className="flex h-auto border-t border-blackSecondary dark:bg-blackPrimary bg-whiteSecondary">
       <Sidebar />
-      <div className="w-full dark:bg-blackPrimary bg-whiteSecondary ">
-        <div className="py-10 dark:bg-blackPrimary bg-whiteSecondary">
-          <div className="flex items-center justify-between px-4 pb-8 border-b border-gray-800 sm:px-6 lg:px-8 max-sm:flex-col max-sm:gap-5">
-            <div className="flex flex-col gap-3">
-              <h2 className="text-3xl font-bold leading-7 dark:text-whiteSecondary text-blackPrimary">
-                Edit category
-              </h2>
-            </div>
-            <div className="flex gap-x-2 max-[370px]:flex-col max-[370px]:gap-2 max-[370px]:items-center">
-              <button className="flex items-center justify-center w-48 py-2 text-lg duration-200 border border-gray-600 dark:bg-blackPrimary bg-whiteSecondary dark:hover:border-gray-500 hover:border-gray-400 gap-x-2">
-                <AiOutlineSave className="text-xl dark:text-whiteSecondary text-blackPrimary" />
-                <span className="font-medium dark:text-whiteSecondary text-blackPrimary">
-                  Save draft
-                </span>
-              </button>
-              <Link
-                to="/categories/add-category"
-                className="flex items-center justify-center w-48 py-2 text-lg duration-200 dark:bg-whiteSecondary bg-blackPrimary dark:hover:bg-white hover:bg-blackSecondary gap-x-2"
-              >
-                <HiOutlineSave className="text-xl dark:text-blackPrimary text-whiteSecondary" />
-                <span className="font-semibold dark:text-blackPrimary text-whiteSecondary">
-                  Update category
-                </span>
-              </Link>
-            </div>
+
+      <div className="w-full">
+        <form onSubmit={handleSubmit(onSubmit)} className="py-10">
+          {/* HEADER */}
+          <div className="flex items-center justify-between px-8 pb-8 border-b border-gray-800">
+            <h2 className="text-3xl font-bold">Edit category</h2>
+
+            <button
+              disabled={isPending}
+              type="submit"
+              className="flex items-center justify-center w-48 py-2 text-lg dark:bg-whiteSecondary bg-blackPrimary gap-x-2"
+            >
+              <HiOutlineSave className="text-xl" />
+              <span>{isPending ? "Updating..." : "Update category"}</span>
+            </button>
           </div>
 
-          {/* Add Category section here  */}
-          <div className="grid grid-cols-2 px-4 pt-8 pb-8 sm:px-6 lg:px-8 gap-x-10 max-xl:grid-cols-1 max-xl:gap-y-10">
-            {/* left div */}
+          {/* BODY */}
+          <div className="grid grid-cols-2 px-8 pt-8 gap-x-10 max-xl:grid-cols-1">
+            {/* LEFT */}
             <div>
-              <h3 className="text-2xl font-bold leading-7 dark:text-whiteSecondary text-blackPrimary">
-                Basic information
-              </h3>
+              <h3 className="text-2xl font-bold">Basic information</h3>
 
               <div className="flex flex-col gap-5 mt-4">
                 <InputWithLabel label="Category title">
-                  <SimpleInput
-                    type="text"
-                    placeholder="Enter a category title..."
-                    value={inputObject.title}
-                    onChange={(e) =>
-                      setInputObject({ ...inputObject, title: e.target.value })
-                    }
-                  />
+                  <SimpleInput {...register("title")} />
+                  {errors.title && (
+                    <p className="error">{errors.title.message}</p>
+                  )}
                 </InputWithLabel>
 
                 <InputWithLabel label="Category description">
-                  <TextAreaInput
-                    placeholder="Enter a category description..."
-                    rows={4}
-                    cols={50}
-                    value={inputObject.description}
-                    onChange={(e) =>
-                      setInputObject({
-                        ...inputObject,
-                        description: e.target.value,
-                      })
-                    }
-                  />
+                  <TextAreaInput rows={4} {...register("description")} />
                 </InputWithLabel>
 
                 <InputWithLabel label="Category slug">
-                  <SimpleInput
-                    type="text"
-                    placeholder="Enter a category slug..."
-                    value={inputObject.slug}
-                    onChange={(e) =>
-                      setInputObject({ ...inputObject, slug: e.target.value })
-                    }
-                  />
+                  <SimpleInput {...register("slug")} />
+                  {errors.slug && (
+                    <p className="error">{errors.slug.message}</p>
+                  )}
                 </InputWithLabel>
 
-                <InputWithLabel label="Parent category (optional)">
-                  <SelectInput
-                    selectList={selectList}
-                    value={inputObject.parentCategory}
-                    onChange={(e) =>
-                      setInputObject({
-                        ...inputObject,
-                        parentCategory: e.target.value,
-                      })
-                    }
-                  />
-                </InputWithLabel>
+                <FlatCategory
+                  selectedCategoryId={watch("parentCategoryId")}
+                  onChange={(e) => setValue("parentCategoryId", e.target.value)}
+                />
               </div>
-              <h3 className="mt-16 text-2xl font-bold leading-7 dark:text-whiteSecondary text-blackSecondary">
-                SEO
-              </h3>
+
+              {/* SEO */}
+              <h3 className="mt-16 text-2xl font-bold">SEO</h3>
+
               <div className="flex flex-col gap-5 mt-4">
                 <InputWithLabel label="Meta title">
-                  <SimpleInput
-                    type="text"
-                    placeholder="Enter a meta title..."
-                    value={inputObject.metaTitle}
-                    onChange={(e) =>
-                      setInputObject({ ...inputObject, title: e.target.value })
-                    }
-                  />
+                  <SimpleInput {...register("seoTitle")} />
                 </InputWithLabel>
 
                 <InputWithLabel label="Meta description">
-                  <TextAreaInput
-                    placeholder="Enter a meta description..."
-                    rows={4}
-                    cols={50}
-                    value={inputObject.metaDescription}
-                    onChange={(e) =>
-                      setInputObject({
-                        ...inputObject,
-                        description: e.target.value,
-                      })
-                    }
-                  />
+                  <TextAreaInput rows={4} {...register("seoDescription")} />
                 </InputWithLabel>
               </div>
             </div>
 
-            {/* right div */}
+            {/* RIGHT */}
             <div>
-              <h3 className="text-2xl font-bold leading-7 dark:text-whiteSecondary text-blackPrimary">
-                Category image
-              </h3>
+              <h3 className="text-2xl font-bold">Category image</h3>
 
-              {/* <ImageUpload /> */}
-
-              <div className="flex flex-wrap justify-center mt-5 gap-x-2">
-                <img
-                  src="/src/assets/tablet (1).jpg"
-                  alt=""
-                  className="h-32 w-36"
-                />
-              </div>
+              <ImageUpload
+                selectedImageIds={selectedImageIds}
+                onSelect={setSelectedImageIds}
+                showPreview
+                label="Featured Image"
+              />
             </div>
           </div>
-        </div>
+        </form>
       </div>
     </div>
   );
 };
+
 export default EditCategory;
