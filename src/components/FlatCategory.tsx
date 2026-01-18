@@ -17,8 +17,6 @@ export const FlatCategory = ({
     queryFn: getFlatCategories,
   });
 
-  console.log("data", data, isLoading);
-
   if (isLoading) {
     return <div>Loading...</div>;
   } else if (isError) {

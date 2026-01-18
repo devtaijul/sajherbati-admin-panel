@@ -66,6 +66,10 @@ export type Category = {
   updatedAt: Date;
 };
 
+export type CategoryWithParent = Category & {
+  parent: Category | null;
+};
+
 export type CategoryInput = Omit<
   Category,
   "id" | "createdAt" | "updatedAt" | "children"

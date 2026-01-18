@@ -4,15 +4,33 @@ import {
   HiOutlinePlus,
   HiOutlineSearch,
 } from "react-icons/hi";
-import {
-  CategoryTable,
-  Pagination,
-  RowsPerPage,
-  Sidebar,
-  WhiteButton,
-} from "../components";
+import { CategoryTable, Pagination, Sidebar, WhiteButton } from "../components";
+import usePagination from "../hooks/usePagination";
+import { getCategories } from "../services/category.api";
+import { useEffect } from "react";
 
 const Categories = () => {
+  const pagination = usePagination<any>({
+    itemsPerPage: 5,
+    defaultSortBy: "createdAt",
+    defaultSortOrder: "desc",
+  });
+
+  const {
+    data,
+    isLoading,
+    error,
+    currentPage,
+    totalPages,
+    fetchData,
+    goToNextPage,
+    goToPrevPage,
+  } = pagination;
+
+  useEffect(() => {
+    fetchData(getCategories);
+  }, [currentPage]); // page change হলে auto fetch
+
   return (
     <div className="flex h-auto border-t border-blackSecondary border-1 dark:bg-blackPrimary bg-whiteSecondary">
       <Sidebar />
@@ -70,10 +88,14 @@ const Categories = () => {
               </select>
             </div>
           </div>
-          <CategoryTable />
+          <CategoryTable loading={isLoading} data={data} error={error} />
           <div className="flex items-center justify-between gap-4 px-4 py-6 sm:px-6 lg:px-8 max-sm:flex-col max-sm:pt-6 max-sm:pb-0">
-            <RowsPerPage />
-            <Pagination />
+            <Pagination
+              pagination={pagination}
+              showPageNumbers={true}
+              showLimitSelector={true}
+              customLimits={[10, 20, 50, 100]}
+            />
           </div>
         </div>
       </div>
