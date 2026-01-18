@@ -20,7 +20,6 @@ import { updateCategoryMutation } from "../resolvers/mutation";
 const EditCategory = () => {
   const { id } = useParams<{ id: string }>();
   const [selectedImageIds, setSelectedImageIds] = useState<string[]>([]);
-  console.log("selectedImagId", selectedImageIds);
 
   const {
     register,

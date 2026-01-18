@@ -27,8 +27,6 @@ const MediaSelector: React.FC<MediaSelectorProps> = ({
   const [uploading, setUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  console.log("SEleected", selectedIds);
-
   const {
     data: mediaData,
     isLoading,
