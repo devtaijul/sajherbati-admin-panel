@@ -6,3 +6,6 @@ export const getFlatCategories = async () =>
 
 export const getCategoryTree = async () =>
   axios.get(`${BACKEND_URL}/category/tree`).then((res) => res.data);
+
+export const getProducts = async () =>
+  axios.get(`${BACKEND_URL}/product`).then((res) => res.data);

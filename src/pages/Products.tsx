@@ -9,8 +9,33 @@ import { HiOutlinePlus } from "react-icons/hi";
 import { HiOutlineChevronRight } from "react-icons/hi";
 import { AiOutlineExport } from "react-icons/ai";
 import { HiOutlineSearch } from "react-icons/hi";
+import usePagination from "../hooks/usePagination";
+import { useEffect } from "react";
+import { getProducts } from "../services/products.api";
 
 const Products = () => {
+  const pagination = usePagination<any>({
+    defaultSortBy: "createdAt",
+    defaultSortOrder: "desc",
+  });
+
+  const {
+    data,
+    isLoading,
+    error,
+    currentPage,
+    totalPages,
+    fetchData,
+    goToNextPage,
+    goToPrevPage,
+  } = pagination;
+
+  useEffect(() => {
+    fetchData(getProducts);
+  }, [currentPage, fetchData]); // page change হলে auto fetch
+
+  console.log(data, error, isLoading);
+
   return (
     <div className="flex h-auto border-t dark:border-blackSecondary border-blackSecondary border-1 dark:bg-blackPrimary bg-whiteSecondary">
       <Sidebar />
@@ -52,6 +77,19 @@ const Products = () => {
                 type="text"
                 className="h-10 bg-white border border-gray-600 w-60 dark:bg-blackPrimary dark:text-whiteSecondary text-blackPrimary outline-0 indent-10 focus:border-gray-500"
                 placeholder="Search products..."
+                name="search"
+                id="search"
+                onChange={(e) => {
+                  // update url
+                  const search = new URLSearchParams(window.location.search);
+                  search.set("search", e.target.value);
+                  window.history.replaceState(
+                    {},
+                    "",
+                    `${window.location.pathname}?${search.toString()}`,
+                  );
+                  // update data
+                }}
               />
             </div>
             <div>
@@ -68,9 +106,14 @@ const Products = () => {
               </select>
             </div>
           </div>
-          <ProductTable />
+          <ProductTable products={data} loading={isLoading} error={error} />
           <div className="flex items-center justify-between gap-4 px-4 py-6 sm:px-6 lg:px-8 max-sm:flex-col max-sm:pt-6 max-sm:pb-0">
-            {/* <Pagination /> */}
+            <Pagination
+              pagination={pagination}
+              showPageNumbers={true}
+              showLimitSelector={true}
+              customLimits={[10, 20, 50, 100]}
+            />
           </div>
         </div>
       </div>

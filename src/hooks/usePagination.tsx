@@ -18,6 +18,7 @@ interface UsePaginationReturn<T> {
   limit: number;
   sortBy: string;
   sortOrder: "asc" | "desc";
+  search: string;
   totalItems: number;
   totalPages: number;
   data: T[];
@@ -27,6 +28,7 @@ interface UsePaginationReturn<T> {
   setPage: (page: number) => void;
   setLimit: (limit: number) => void;
   setSort: (sortBy: string, order?: "asc" | "desc") => void;
+  setSearch: (query: string) => void;
 
   fetchData: (
     fetcher: (params: {
@@ -34,6 +36,7 @@ interface UsePaginationReturn<T> {
       limit: number;
       sortBy: string;
       sortOrder: "asc" | "desc";
+      search?: string;
     }) => Promise<ApiPaginationResponse<T>>,
   ) => Promise<void>;
 
@@ -57,6 +60,7 @@ const usePagination = <T,>({
   const sortOrder = (searchParams.get("sortOrder") || defaultSortOrder) as
     | "asc"
     | "desc";
+  const search = searchParams.get("search") || "";
 
   const [data, setData] = useState<T[]>([]);
   const [totalItems, setTotalItems] = useState(0);
@@ -75,14 +79,16 @@ const usePagination = <T,>({
         limit: number;
         sortBy: string;
         sortOrder: "asc" | "desc" | "newest" | "oldest";
+        search: string;
       }>,
     ) => {
       const sp = new URLSearchParams(searchParams);
 
-      if (params.page) sp.set("page", String(params.page));
-      if (params.limit) sp.set("limit", String(params.limit));
-      if (params.sortBy) sp.set("sortBy", params.sortBy);
-      if (params.sortOrder) sp.set("sortOrder", params.sortOrder);
+      if (params.page !== undefined) sp.set("page", String(params.page));
+      if (params.limit !== undefined) sp.set("limit", String(params.limit));
+      if (params.sortBy !== undefined) sp.set("sortBy", params.sortBy);
+      if (params.sortOrder !== undefined) sp.set("sortOrder", params.sortOrder);
+      if (params.search !== undefined) sp.set("search", params.search);
 
       setSearchParams(sp);
     },
@@ -99,6 +105,9 @@ const usePagination = <T,>({
     order: "asc" | "desc" | "newest" | "oldest" = "asc",
   ) => updateSearchParams({ sortBy, sortOrder: order, page: 1 });
 
+  const setSearch = (query: string) =>
+    updateSearchParams({ search: query, page: 1 });
+
   const fetchData = useCallback(
     async (
       fetcher: (params: {
@@ -106,6 +115,7 @@ const usePagination = <T,>({
         limit: number;
         sortBy: string;
         sortOrder: "asc" | "desc";
+        search?: string;
       }) => Promise<ApiPaginationResponse<T>>,
     ) => {
       setIsLoading(true);
@@ -117,6 +127,7 @@ const usePagination = <T,>({
           limit,
           sortBy,
           sortOrder,
+          search: search || undefined,
         });
 
         setData(res.data);
@@ -127,7 +138,7 @@ const usePagination = <T,>({
         setIsLoading(false);
       }
     },
-    [currentPage, limit, sortBy, sortOrder],
+    [currentPage, limit, sortBy, sortOrder, search],
   );
 
   const goToNextPage = () =>
@@ -156,6 +167,7 @@ const usePagination = <T,>({
     limit,
     sortBy,
     sortOrder,
+    search,
     totalItems,
     totalPages,
     data,
@@ -164,6 +176,7 @@ const usePagination = <T,>({
     setPage,
     setLimit,
     setSort,
+    setSearch,
     fetchData,
     goToNextPage,
     goToPrevPage,
