@@ -18,8 +18,15 @@ import { ProductSchema, productSchema } from "../utils/validation";
 import SwitchToggle from "../components/SwitchToggle";
 import ColorPicker from "../components/ColorPicker";
 import KeywordInput from "../components/KeywordInput";
-import React from "react";
+import React, { useState } from "react";
 import SizeSelector from "../components/SizeSelector";
+import { ParentToChildCategorySelector } from "../components/ParentToChildCategorySelector";
+import { useMutation } from "@tanstack/react-query";
+import { createProductMutation } from "../resolvers/mutation";
+import toast from "react-hot-toast";
+import ProductRelationSelector, {
+  Product,
+} from "../components/ProductRelationSelector";
 
 const CreateProduct = () => {
   const {
@@ -27,6 +34,7 @@ const CreateProduct = () => {
     handleSubmit,
     setValue,
     control,
+    reset,
     watch,
     formState: { errors },
   } = useForm({
@@ -41,8 +49,15 @@ const CreateProduct = () => {
       stitchType: "STITCH",
     },
   });
-  const [featuredImage, setFeaturedImage] = React.useState<string[]>([]);
-  const [galleryImages, setGalleryImages] = React.useState<string[]>([]);
+  const [featuredImage, setFeaturedImage] = useState<string[]>([]);
+  const [galleryImages, setGalleryImages] = useState<string[]>([]);
+  const [relatedProducts, setRelatedProducts] = useState<Product[]>([]);
+  console.log("relatedProducts", relatedProducts);
+
+  const { mutate, isPending } = useMutation({
+    mutationKey: ["create-product"],
+    mutationFn: createProductMutation,
+  });
 
   const stitchType = watch("stitchType");
   const displayPriority = watch("displayPriority");
@@ -53,14 +68,30 @@ const CreateProduct = () => {
     console.log("GALLERY IMAGES 👉", galleryImages);
     const variables = {
       ...data,
-      featuredImage: featuredImage[0],
-      galleryImages,
+      featuredImageId: featuredImage[0],
+      galleryImageIds: galleryImages,
     };
     console.log("variables", variables);
-  };
 
-  console.log("errors", errors);
-  console.log("watch", watch());
+    mutate(
+      {
+        product: variables,
+      },
+      {
+        onSuccess: () => {
+          console.log("Product created successfully");
+          toast.success("Product created successfully");
+          reset();
+          setFeaturedImage([]);
+          setGalleryImages([]);
+        },
+        onError: (error: any) => {
+          console.error("Failed to create product:", error);
+          toast.error("Failed to create product");
+        },
+      },
+    );
+  };
 
   return (
     <div className="flex h-auto border-t border-blackSecondary dark:bg-blackPrimary bg-whiteSecondary">
@@ -77,12 +108,20 @@ const CreateProduct = () => {
           </h2>
 
           <div className="flex gap-2">
-            <button type="button" className="btn-outline">
+            {/* <button
+              type="button"
+              className="flex items-center gap-2 px-4 py-2 bg-gray-200 rounded-md btn-primary dark:bg-white"
+            >
               <AiOutlineSave /> Save draft
-            </button>
+            </button> */}
 
-            <button type="submit" className="btn-primary">
-              <HiOutlineSave /> Publish product
+            <button
+              type="submit"
+              disabled={isPending}
+              className="flex items-center gap-2 px-4 py-2 bg-gray-200 rounded-md btn-primary dark:bg-white"
+            >
+              <HiOutlineSave />{" "}
+              {isPending ? "Publishing..." : "Publish product"}
             </button>
           </div>
         </div>
@@ -101,15 +140,9 @@ const CreateProduct = () => {
             </InputWithLabel>
 
             <InputWithLabel label="Category">
-              <SelectInput
-                defaultValue="categoryId"
-                onChange={(event) => {
-                  setValue("categoryId", event.target.value);
-                }}
-                selectList={[
-                  { value: "1", label: "Category 1" },
-                  { value: "2", label: "Category 2" },
-                ]}
+              <ParentToChildCategorySelector
+                selectedValue={watch("categoryId")}
+                setValue={(value) => setValue("categoryId", value)}
               />
             </InputWithLabel>
 
@@ -121,7 +154,7 @@ const CreateProduct = () => {
                 onChange={(event) => {
                   setValue(
                     "stitchType",
-                    event.target.value as "STITCH" | "UNSTITCH"
+                    event.target.value as "STITCH" | "UNSTITCH",
                   );
                 }}
                 selectList={[
@@ -201,6 +234,15 @@ const CreateProduct = () => {
                 label="Custom Relation"
                 register={register("isCustomeRelation")}
               />
+              {watch("isCustomeRelation") && (
+                <InputWithLabel label="Custom Relation">
+                  <ProductRelationSelector
+                    value={relatedProducts}
+                    onChange={setRelatedProducts}
+                    multiple={true}
+                  />
+                </InputWithLabel>
+              )}
               <SwitchToggle label="In Stock" register={register("inStock")} />
 
               {/* Color */}
@@ -296,6 +338,7 @@ const CreateProduct = () => {
                 />
               </InputWithLabel>
             </div>
+
             {/* SEO SECTION */}
             <div>
               <h3 className="mt-16 text-2xl font-bold leading-7 dark:text-whiteSecondary text-blackPrimary">
