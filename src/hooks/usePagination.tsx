@@ -1,3 +1,4 @@
+// usePagination.ts
 import { useState, useCallback, useMemo } from "react";
 import { useSearchParams } from "react-router-dom";
 
@@ -28,7 +29,7 @@ interface UsePaginationReturn<T> {
   setPage: (page: number) => void;
   setLimit: (limit: number) => void;
   setSort: (sortBy: string, order?: "asc" | "desc") => void;
-  setSearch: (query: string) => void;
+  setSearch: (search: string) => void;
 
   fetchData: (
     fetcher: (params: {
@@ -78,7 +79,7 @@ const usePagination = <T,>({
         page: number;
         limit: number;
         sortBy: string;
-        sortOrder: "asc" | "desc" | "newest" | "oldest";
+        sortOrder: "asc" | "desc";
         search: string;
       }>,
     ) => {
@@ -86,8 +87,8 @@ const usePagination = <T,>({
 
       if (params.page !== undefined) sp.set("page", String(params.page));
       if (params.limit !== undefined) sp.set("limit", String(params.limit));
-      if (params.sortBy !== undefined) sp.set("sortBy", params.sortBy);
-      if (params.sortOrder !== undefined) sp.set("sortOrder", params.sortOrder);
+      if (params.sortBy) sp.set("sortBy", params.sortBy);
+      if (params.sortOrder) sp.set("sortOrder", params.sortOrder);
       if (params.search !== undefined) sp.set("search", params.search);
 
       setSearchParams(sp);
@@ -100,13 +101,11 @@ const usePagination = <T,>({
 
   const setLimit = (limit: number) => updateSearchParams({ limit, page: 1 });
 
-  const setSort = (
-    sortBy: string,
-    order: "asc" | "desc" | "newest" | "oldest" = "asc",
-  ) => updateSearchParams({ sortBy, sortOrder: order, page: 1 });
+  const setSort = (sortBy: string, order: "asc" | "desc" = "asc") =>
+    updateSearchParams({ sortBy, sortOrder: order, page: 1 });
 
-  const setSearch = (query: string) =>
-    updateSearchParams({ search: query, page: 1 });
+  const setSearch = (value: string) =>
+    updateSearchParams({ search: value, page: 1 });
 
   const fetchData = useCallback(
     async (
@@ -127,9 +126,8 @@ const usePagination = <T,>({
           limit,
           sortBy,
           sortOrder,
-          search: search || undefined,
+          search,
         });
-
         setData(res.data);
         setTotalItems(res.total);
       } catch (e) {
@@ -150,7 +148,6 @@ const usePagination = <T,>({
   const getPaginationRange = () => {
     const delta = 2;
     const pages: number[] = [];
-
     for (
       let i = Math.max(1, currentPage - delta);
       i <= Math.min(totalPages, currentPage + delta);
@@ -158,7 +155,6 @@ const usePagination = <T,>({
     ) {
       pages.push(i);
     }
-
     return pages;
   };
 

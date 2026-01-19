@@ -10,14 +10,14 @@ import { HiOutlineChevronRight } from "react-icons/hi";
 import { AiOutlineExport } from "react-icons/ai";
 import { HiOutlineSearch } from "react-icons/hi";
 import usePagination from "../hooks/usePagination";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { getProducts } from "../services/products.api";
+import useDebounce from "../hooks/useDebounce";
 
 const Products = () => {
-  const pagination = usePagination<any>({
-    defaultSortBy: "createdAt",
-    defaultSortOrder: "desc",
-  });
+  const pagination = usePagination<any>();
+  const [searchInput, setSearchInput] = useState("");
+  const debouncedSearch = useDebounce(searchInput, 500);
 
   const {
     data,
@@ -25,16 +25,22 @@ const Products = () => {
     error,
     currentPage,
     totalPages,
+    search,
+    setSearch,
     fetchData,
     goToNextPage,
     goToPrevPage,
   } = pagination;
 
+  // Fetch data on page, sort, or search change
   useEffect(() => {
     fetchData(getProducts);
-  }, [currentPage, fetchData]); // page change হলে auto fetch
+  }, [currentPage, fetchData, search]);
 
-  console.log(data, error, isLoading);
+  // Update pagination search when debounced input changes
+  useEffect(() => {
+    setSearch(debouncedSearch);
+  }, [debouncedSearch, setSearch]);
 
   return (
     <div className="flex h-auto border-t dark:border-blackSecondary border-blackSecondary border-1 dark:bg-blackPrimary bg-whiteSecondary">
@@ -79,17 +85,8 @@ const Products = () => {
                 placeholder="Search products..."
                 name="search"
                 id="search"
-                onChange={(e) => {
-                  // update url
-                  const search = new URLSearchParams(window.location.search);
-                  search.set("search", e.target.value);
-                  window.history.replaceState(
-                    {},
-                    "",
-                    `${window.location.pathname}?${search.toString()}`,
-                  );
-                  // update data
-                }}
+                value={searchInput}
+                onChange={(e) => setSearchInput(e.target.value)}
               />
             </div>
             <div>
