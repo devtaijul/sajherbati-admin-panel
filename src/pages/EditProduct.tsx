@@ -1,320 +1,488 @@
-import { useState } from "react";
-import { AiOutlineSave } from "react-icons/ai";
 import { HiOutlineSave } from "react-icons/hi";
-import { Link } from "react-router-dom";
-import { InputWithLabel, Sidebar } from "../components";
+import {
+  ImageUpload,
+  InputWithLabel,
+  Sidebar,
+  TextAreaInput,
+} from "../components";
 import SelectInput from "../components/SelectInput";
 import SimpleInput from "../components/SimpleInput";
-import TextAreaInput from "../components/TextAreaInput";
-import { selectList, stockStatusList } from "../utils/data";
+
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Controller, useForm } from "react-hook-form";
+
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { ChangeEvent, useEffect, useRef, useState } from "react";
+import toast from "react-hot-toast";
+import ReactQuill from "react-quill";
+import { useParams } from "react-router-dom";
+
+import { ParentToChildCategorySelector } from "../components/ParentToChildCategorySelector";
+import ProductRelationSelector from "../components/ProductRelationSelector";
+import SizeSelector from "../components/SizeSelector";
+import SwitchToggle from "../components/SwitchToggle";
+
+import { updateProductMutation } from "../resolvers/mutation";
+
+import { productSchema, ProductSchema } from "../utils/validation";
+import { Media, Product } from "../vite-env";
+import { getproductById } from "../resolvers/query";
+import ProductFormSkeleton from "../components/skeleton/ProductFormSkeleton";
+import ColorPicker from "../components/ColorPicker";
+import KeywordInput from "../components/KeywordInput";
 
 const EditProduct = () => {
-  const [inputObject, setInputObject] = useState({
-    title: "Samsung Galaxy Tab A7 Lite",
-    description: "This is demo description for Samsung Galaxy Tab A7 Lite.",
-    category: selectList[0].value,
-    basePrice: "$100",
-    discountPrice: "$80",
-    stock: "50",
-    sku: "SK-2323-2323",
-    stockStatus: stockStatusList[0].value,
-    weight: "500g",
-    length: "600cm",
-    width: "600cm",
-    height: "400cm",
-    metaTitle: "Samsung Galaxy Tab A7 Lite - Demo Title",
-    metaDescription: "Samsung Galaxy Tab A7 Lite - Demo Description",
+  const hydratedRef = useRef(false);
+  const { id } = useParams<{ id: string }>();
+
+  /* ================= FORM ================= */
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    control,
+    reset,
+    watch,
+    formState: { errors },
+  } = useForm<ProductSchema>({
+    resolver: zodResolver(productSchema),
   });
 
+  console.log("error", errors);
+
+  /* ================= LOCAL STATE ================= */
+  const [featuredImage, setFeaturedImage] = useState<string[]>([]);
+  const [galleryImages, setGalleryImages] = useState<string[]>([]);
+  const [relatedProducts, setRelatedProducts] = useState<Product[]>([]);
+  const [attachProduct, setAttachProduct] = useState<Product[]>([]);
+  const [openAttachProduct, setOpenAttachProduct] = useState(false);
+
+  /* ================= FETCH PRODUCT ================= */
+  const { isLoading, data, error } = useQuery({
+    queryKey: ["product", id],
+    queryFn: () => getproductById(id!),
+    enabled: !!id,
+  });
+  console.log("data", data);
+
+  /* ================= UPDATE ================= */
+  const { mutate, isPending } = useMutation({
+    mutationKey: ["update-product", id],
+    mutationFn: updateProductMutation,
+  });
+
+  /* ================= SUBMIT ================= */
+  const onSubmit = (data: ProductSchema) => {
+    const variables = {
+      id,
+      ...data,
+      featuredImageId: featuredImage[0] || null,
+      galleryImageIds: galleryImages,
+      relatedProductIds: relatedProducts.map((p) => p.id),
+      attachProductId: attachProduct[0]?.id || null,
+    };
+    // delete id from variables
+    delete variables.id;
+
+    console.log("variable", variables);
+
+    if (!id) {
+      return toast.error("Product id not found");
+    }
+
+    mutate(
+      {
+        id,
+        product: variables,
+      },
+      {
+        onSuccess: () => {
+          toast.success("Product updated successfully");
+        },
+        onError: () => {
+          toast.error("Failed to update product");
+        },
+      },
+    );
+  };
+
+  const stitchType = watch("stitchType");
+  const displayPriority = watch("displayPriority");
+
+  useEffect(() => {
+    console.log("inside dhaka", data);
+    // if (!data || hydratedRef.current) return;
+
+    const product = data?.data;
+    if (!product) return;
+
+    reset({
+      ...product,
+      categoryId: product?.categoryId || "",
+      stitchType: product?.stitchType || "STITCH",
+    });
+
+    setFeaturedImage(product.featuredImageId ? [product.featuredImageId] : []);
+    setGalleryImages(product.galleryImages.map((g: Media) => g.id) || []);
+    setRelatedProducts(product.relatedProducts || []);
+    setAttachProduct(product.attachProduct ? [product.attachProduct] : []);
+
+    hydratedRef.current = true;
+  }, [data, reset]);
+
+  if (isLoading) {
+    return <ProductFormSkeleton />;
+  }
+
+  if (error) {
+    return <div>Something went wrong</div>;
+  }
+
+  /* ================= UI ================= */
   return (
-    <div className="flex h-auto border-t border-blackSecondary border-1 dark:bg-blackPrimary bg-whiteSecondary">
+    <div className="flex border-t dark:bg-blackPrimary bg-whiteSecondary">
       <Sidebar />
-      <div className="w-full dark:bg-blackPrimary bg-whiteSecondary ">
-        <div className="py-10 dark:bg-blackPrimary bg-whiteSecondary">
-          <div className="flex items-center justify-between px-4 pb-8 border-b border-gray-800 sm:px-6 lg:px-8 max-sm:flex-col max-sm:gap-5">
-            <div className="flex flex-col gap-3">
-              <h2 className="text-3xl font-bold leading-7 dark:text-whiteSecondary text-blackPrimary">
-                Edit product
-              </h2>
-            </div>
-            <div className="flex gap-x-2 max-[370px]:flex-col max-[370px]:gap-2 max-[370px]:items-center">
-              <button className="flex items-center justify-center w-48 py-2 text-lg duration-200 border border-gray-600 dark:bg-blackPrimary bg-whiteSecondary dark:hover:border-gray-500 hover:border-gray-400 gap-x-2">
-                <AiOutlineSave className="text-xl dark:text-whiteSecondary text-blackPrimary" />
-                <span className="font-medium dark:text-whiteSecondary text-blackPrimary">
-                  Save draft
-                </span>
-              </button>
-              <Link
-                to="/products/add-product"
-                className="flex items-center justify-center w-48 py-2 text-lg duration-200 dark:bg-whiteSecondary bg-blackPrimary dark:hover:bg-white hover:bg-blackSecondary gap-x-2"
-              >
-                <HiOutlineSave className="text-xl dark:text-blackPrimary text-whiteSecondary" />
-                <span className="font-semibold dark:text-blackPrimary text-whiteSecondary">
-                  Update product
-                </span>
-              </Link>
-            </div>
-          </div>
 
-          {/* Add Product section here  */}
-          <div className="grid grid-cols-2 px-4 pt-8 pb-8 sm:px-6 lg:px-8 gap-x-10 max-xl:grid-cols-1 max-xl:gap-y-10">
-            {/* left div */}
-            <div>
-              <h3 className="text-2xl font-bold leading-7 dark:text-whiteSecondary text-blackPrimary">
-                Basic information
-              </h3>
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        className="w-full py-10 dark:bg-blackPrimary bg-whiteSecondary"
+      >
+        {/* Header */}
+        <div className="flex items-center justify-between px-4 pb-8 border-b border-gray-800 sm:px-6 lg:px-8">
+          <h2 className="text-3xl font-bold dark:text-whiteSecondary">
+            Add new product
+          </h2>
 
-              <div className="flex flex-col gap-5 mt-4">
-                <InputWithLabel label="Title">
-                  <SimpleInput
-                    type="text"
-                    placeholder="Enter a product title..."
-                    value={inputObject.title}
-                    onChange={(e) =>
-                      setInputObject({ ...inputObject, title: e.target.value })
-                    }
-                  />
-                </InputWithLabel>
+          <div className="flex gap-2">
+            {/* <button
+              type="button"
+              className="flex items-center gap-2 px-4 py-2 bg-gray-200 rounded-md btn-primary dark:bg-white"
+            >
+              <AiOutlineSave /> Save draft
+            </button> */}
 
-                <InputWithLabel label="Description">
-                  <TextAreaInput
-                    placeholder="Enter a product description..."
-                    rows={4}
-                    cols={50}
-                    value={inputObject.description}
-                    onChange={(e) =>
-                      setInputObject({
-                        ...inputObject,
-                        description: e.target.value,
-                      })
-                    }
-                  />
-                </InputWithLabel>
-
-                <InputWithLabel label="Category">
-                  <SelectInput
-                    selectList={selectList}
-                    value={inputObject.category}
-                    onChange={(e) =>
-                      setInputObject({
-                        ...inputObject,
-                        category: e.target.value,
-                      })
-                    }
-                  />
-                </InputWithLabel>
-              </div>
-
-              <h3 className="mt-16 text-2xl font-bold leading-7 dark:text-whiteSecondary text-blackPrimary">
-                Pricing & Inventory
-              </h3>
-
-              <div className="flex flex-col gap-5 mt-4">
-                <div className="grid grid-cols-2 gap-x-5 max-[500px]:grid-cols-1 max-[500px]:gap-x-0 max-[500px]:gap-y-5">
-                  <InputWithLabel label="Base pricing">
-                    <SimpleInput
-                      type="text"
-                      placeholder="Enter a product base pricing..."
-                      value={inputObject.basePrice}
-                      onChange={(e) =>
-                        setInputObject({
-                          ...inputObject,
-                          basePrice: e.target.value,
-                        })
-                      }
-                    />
-                  </InputWithLabel>
-
-                  <InputWithLabel label="Price with dicount">
-                    <SimpleInput
-                      type="text"
-                      placeholder="Enter a price with discount..."
-                      value={inputObject.discountPrice}
-                      onChange={(e) =>
-                        setInputObject({
-                          ...inputObject,
-                          discountPrice: e.target.value,
-                        })
-                      }
-                    />
-                  </InputWithLabel>
-                </div>
-
-                <div className="grid grid-cols-2 gap-x-5 max-[500px]:grid-cols-1 max-[500px]:gap-x-0 max-[500px]:gap-y-5">
-                  <InputWithLabel label="Stock">
-                    <SimpleInput
-                      type="text"
-                      placeholder="Enter a product stock..."
-                      value={inputObject.stock}
-                      onChange={(e) =>
-                        setInputObject({
-                          ...inputObject,
-                          stock: e.target.value,
-                        })
-                      }
-                    />
-                  </InputWithLabel>
-
-                  <InputWithLabel label="SKU">
-                    <SimpleInput
-                      type="text"
-                      placeholder="Enter a product SKU..."
-                      value={inputObject.sku}
-                      onChange={(e) =>
-                        setInputObject({
-                          ...inputObject,
-                          sku: e.target.value,
-                        })
-                      }
-                    />
-                  </InputWithLabel>
-                </div>
-                <InputWithLabel label="Stock status">
-                  <SelectInput
-                    selectList={stockStatusList}
-                    value={inputObject.stockStatus}
-                    onChange={(e) =>
-                      setInputObject({
-                        ...inputObject,
-                        stockStatus: e.target.value,
-                      })
-                    }
-                  />
-                </InputWithLabel>
-              </div>
-
-              <h3 className="mt-16 text-2xl font-bold leading-7 dark:text-whiteSecondary text-blackPrimary">
-                Delivery
-              </h3>
-
-              <div className="flex flex-col gap-5 mt-4">
-                <div className="grid grid-cols-2 gap-x-5 gap-y-5 max-[500px]:grid-cols-1 max-[500px]:gap-x-0 max-[500px]:gap-y-5">
-                  <InputWithLabel label="Weight (kg)">
-                    <SimpleInput
-                      type="text"
-                      placeholder="Enter a product weight..."
-                      value={inputObject.weight}
-                      onChange={(e) => {
-                        setInputObject({
-                          ...inputObject,
-                          weight: e.target.value,
-                        });
-                      }}
-                    />
-                  </InputWithLabel>
-                  <InputWithLabel label="Length (cm)">
-                    <SimpleInput
-                      type="text"
-                      placeholder="Enter a product length..."
-                      value={inputObject.length}
-                      onChange={(e) => {
-                        setInputObject({
-                          ...inputObject,
-                          length: e.target.value,
-                        });
-                      }}
-                    />
-                  </InputWithLabel>
-                  <InputWithLabel label="Width (cm)">
-                    <SimpleInput
-                      type="text"
-                      placeholder="Enter a product width..."
-                      value={inputObject.width}
-                      onChange={(e) => {
-                        setInputObject({
-                          ...inputObject,
-                          width: e.target.value,
-                        });
-                      }}
-                    />
-                  </InputWithLabel>
-                  <InputWithLabel label="Height (cm)">
-                    <SimpleInput
-                      type="text"
-                      placeholder="Enter a product height..."
-                      value={inputObject.height}
-                      onChange={(e) => {
-                        setInputObject({
-                          ...inputObject,
-                          height: e.target.value,
-                        });
-                      }}
-                    />
-                  </InputWithLabel>
-                </div>
-              </div>
-              <div>
-                <h3 className="mt-16 text-2xl font-bold leading-7 dark:text-whiteSecondary text-blackPrimary">
-                  SEO
-                </h3>
-
-                <div className="flex flex-col gap-5 mt-4">
-                  <InputWithLabel label="Meta title">
-                    <SimpleInput
-                      type="text"
-                      placeholder="Enter a meta title..."
-                      value={inputObject.metaTitle}
-                      onChange={(e) =>
-                        setInputObject({
-                          ...inputObject,
-                          metaTitle: e.target.value,
-                        })
-                      }
-                    />
-                  </InputWithLabel>
-
-                  <InputWithLabel label="Meta description">
-                    <TextAreaInput
-                      placeholder="Enter a meta description..."
-                      rows={4}
-                      cols={50}
-                      value={inputObject.metaDescription}
-                      onChange={(e) =>
-                        setInputObject({
-                          ...inputObject,
-                          metaDescription: e.target.value,
-                        })
-                      }
-                    />
-                  </InputWithLabel>
-                </div>
-              </div>
-            </div>
-
-            {/* right div */}
-            <div>
-              <h3 className="text-2xl font-bold leading-7 dark:text-whiteSecondary text-blackPrimary">
-                Product images
-              </h3>
-
-              {/* <ImageUpload /> */}
-              <div className="flex flex-wrap justify-center mt-5 gap-x-2">
-                <img
-                  src="/src/assets/tablet (1).jpg"
-                  alt=""
-                  className="h-32 w-36"
-                />
-                <img
-                  src="/src/assets/tablet (2).jpg"
-                  alt=""
-                  className="h-32 w-36"
-                />
-                <img
-                  src="/src/assets/tablet (3).jpg"
-                  alt=""
-                  className="h-32 w-36"
-                />
-                <img
-                  src="/src/assets/tablet (4).jpg"
-                  alt=""
-                  className="h-32 w-36"
-                />
-              </div>
-            </div>
+            <button
+              type="submit"
+              disabled={isPending}
+              className="flex items-center gap-2 px-4 py-2 bg-gray-200 rounded-md btn-primary dark:bg-white"
+            >
+              <HiOutlineSave /> {isPending ? "Updating..." : "Update product"}
+            </button>
           </div>
         </div>
-      </div>
+
+        {/* Body */}
+        <div className="grid grid-cols-2 gap-10 px-4 pt-8 sm:px-6 lg:px-8 max-xl:grid-cols-1">
+          {/* LEFT */}
+          <div>
+            <h3 className="section-title">Basic information</h3>
+
+            <InputWithLabel label="Title">
+              <SimpleInput {...register("title")} />
+              {errors.title && (
+                <p className="error">{String(errors.title.message)}</p>
+              )}
+            </InputWithLabel>
+
+            <InputWithLabel label="Category">
+              <ParentToChildCategorySelector
+                selectedValue={watch("categoryId")}
+                setValue={(value) => setValue("categoryId", value)}
+              />
+            </InputWithLabel>
+
+            {/* Stitch Type */}
+            <InputWithLabel label="Product Type">
+              <SelectInput
+                value={stitchType}
+                defaultValue="STITCH"
+                onChange={(event) => {
+                  setValue(
+                    "stitchType",
+                    event.target.value as "STITCH" | "UNSTITCH",
+                  );
+                }}
+                selectList={[
+                  { value: "STITCH", label: "Stitch" },
+                  { value: "UNSTITCH", label: "Unstitch" },
+                ]}
+              />
+            </InputWithLabel>
+
+            {/* Related Product */}
+            <div className="mt-4"></div>
+            <SwitchToggle
+              label="Open attach  product"
+              className="mt-4"
+              register={{
+                onChange: (event: ChangeEvent<HTMLInputElement>) => {
+                  setOpenAttachProduct(event.target.checked);
+                },
+              }}
+            />
+
+            {openAttachProduct && (
+              <InputWithLabel label="Attach product">
+                <ProductRelationSelector
+                  value={attachProduct}
+                  onChange={setAttachProduct}
+                  multiple={false}
+                />
+              </InputWithLabel>
+            )}
+
+            {/* Pricing */}
+            <h3 className="mt-16 section-title">Pricing & Inventory</h3>
+
+            <div className="grid grid-cols-2 gap-5">
+              <InputWithLabel label="Base price">
+                <SimpleInput
+                  type="number"
+                  {...register("regularPrice")}
+                  min={0}
+                />
+              </InputWithLabel>
+
+              <InputWithLabel label="Discount price">
+                <SimpleInput type="number" {...register("price")} />
+              </InputWithLabel>
+            </div>
+
+            <div className="grid grid-cols-2 gap-5">
+              <InputWithLabel label="SKU">
+                <SimpleInput {...register("sku")} />
+              </InputWithLabel>
+            </div>
+
+            {watch("stitchType") === "STITCH" && (
+              <div>
+                <Controller
+                  name="sizes"
+                  control={control}
+                  defaultValue={[]}
+                  render={({ field }) => (
+                    <SizeSelector
+                      value={field.value}
+                      onChange={field.onChange}
+                    />
+                  )}
+                />
+                {errors.sizes && (
+                  <p className="error">{errors.sizes.message}</p>
+                )}
+              </div>
+            )}
+
+            <h3 className="mt-16 section-title">Additional Details</h3>
+
+            <div className="flex flex-col gap-6">
+              {/* Switches */}
+
+              <SwitchToggle
+                label="Top Selling"
+                register={register("isTopSelling")}
+              />
+
+              <SwitchToggle
+                label="New Arrival"
+                register={register("newArrival")}
+              />
+              <SwitchToggle
+                label="Custom Relation"
+                register={register("isCustomeRelation")}
+              />
+              {watch("isCustomeRelation") && (
+                <InputWithLabel label="Custom Relation">
+                  <ProductRelationSelector
+                    value={relatedProducts}
+                    onChange={setRelatedProducts}
+                    multiple={true}
+                  />
+                </InputWithLabel>
+              )}
+              <SwitchToggle label="In Stock" register={register("inStock")} />
+
+              {/* Color */}
+              <InputWithLabel label="Color">
+                <ColorPicker register={register("color")} />
+              </InputWithLabel>
+
+              {/* Manufacturer */}
+              <InputWithLabel label="Manufacturer (optional)">
+                <SimpleInput {...register("manufacturer")} />
+              </InputWithLabel>
+
+              {/* Display Priority */}
+              <InputWithLabel label="Display Priority">
+                <SelectInput
+                  value={displayPriority}
+                  defaultValue={displayPriority}
+                  onChange={(event) => {
+                    setValue("displayPriority", event.target.value);
+                  }}
+                  selectList={[
+                    { label: "Default (0)", value: "0" },
+                    ...Array.from({ length: 20 }).map((_, i) => ({
+                      label: `${i + 1}`,
+                      value: `${i + 1}`,
+                    })),
+                  ]}
+                />
+              </InputWithLabel>
+
+              {/* Keywords */}
+              <InputWithLabel label="Keywords">
+                <KeywordInput
+                  value={watch("keywords")}
+                  onChange={(val: string[]) => setValue("keywords", val)}
+                />
+              </InputWithLabel>
+
+              {/* Measurements */}
+              {stitchType === "UNSTITCH" && (
+                <InputWithLabel label="Body">
+                  <SimpleInput {...register("body")} />
+                  {errors.body && (
+                    <p className="error">{errors.body.message}</p>
+                  )}
+                </InputWithLabel>
+              )}
+
+              <InputWithLabel label="Kamiz Length">
+                <SimpleInput {...register("kamizLong")} />
+              </InputWithLabel>
+
+              {stitchType === "STITCH" && (
+                <InputWithLabel label="Pant Length">
+                  <SimpleInput {...register("pantLong")} />
+                  {errors.pantLong && (
+                    <p className="error">{errors.pantLong.message}</p>
+                  )}
+                </InputWithLabel>
+              )}
+
+              {stitchType === "UNSTITCH" && (
+                <InputWithLabel label="Inner & Salwar">
+                  <SimpleInput {...register("innerAndSalwar")} />
+                  {errors.innerAndSalwar && (
+                    <p className="error">{errors.innerAndSalwar.message}</p>
+                  )}
+                </InputWithLabel>
+              )}
+
+              <InputWithLabel label="Live Link">
+                <SimpleInput {...register("liveLink")} />
+              </InputWithLabel>
+
+              {/* Video */}
+              <InputWithLabel label="Product Video">
+                <SimpleInput {...register("videoUrl")} />
+              </InputWithLabel>
+
+              <InputWithLabel label="Description">
+                <ReactQuill
+                  theme="snow"
+                  value={watch("description")}
+                  className="bg-white dark:bg-blackPrimary dark:text-white text-blackPrimary"
+                  onChange={(val) => setValue("description", val)}
+                />
+              </InputWithLabel>
+
+              <InputWithLabel label="Instruction">
+                <ReactQuill
+                  theme="snow"
+                  value={watch("instruction")}
+                  className="bg-white dark:bg-blackPrimary dark:text-white text-blackPrimary"
+                  onChange={(val) => setValue("instruction", val)}
+                />
+              </InputWithLabel>
+            </div>
+
+            {/* SEO SECTION */}
+            <div>
+              <h3 className="mt-16 text-2xl font-bold leading-7 dark:text-whiteSecondary text-blackPrimary">
+                SEO
+              </h3>
+
+              <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                These settings help your product appear better in search
+                engines.
+              </p>
+
+              <div className="flex flex-col gap-5 mt-4">
+                {/* Meta Title */}
+                <InputWithLabel label="Meta title">
+                  <SimpleInput
+                    type="text"
+                    placeholder="Enter a meta title (max 70 characters)"
+                    {...register("seoTitle")}
+                  />
+                  {errors.seoTitle && (
+                    <p className="mt-1 text-xs text-red-500">
+                      {String(errors.seoTitle.message)}
+                    </p>
+                  )}
+                  <p className="mt-1 text-xs text-gray-400">
+                    {watch("seoTitle")?.length || 0} / 70 characters
+                  </p>
+                </InputWithLabel>
+
+                {/* Meta Description */}
+                <InputWithLabel label="Meta description">
+                  <TextAreaInput
+                    placeholder="Enter a meta description (max 160 characters)"
+                    rows={4}
+                    {...register("seoDescription")}
+                  />
+                  {errors.seoDescription && (
+                    <p className="mt-1 text-xs text-red-500">
+                      {String(errors.seoDescription.message)}
+                    </p>
+                  )}
+                  <p className="mt-1 text-xs text-gray-400">
+                    {watch("seoDescription")?.length || 0} / 160 characters
+                  </p>
+                </InputWithLabel>
+              </div>
+
+              {/* SEO Preview */}
+              <div className="p-4 mt-6 border border-gray-700 rounded-md">
+                <p className="text-sm font-medium text-blue-600">
+                  {watch("seoTitle") || "SEO title preview"}
+                </p>
+                <p className="mt-1 text-sm text-gray-500">
+                  {watch("seoDescription") ||
+                    "SEO description preview will appear here."}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* RIGHT */}
+          <div>
+            <h3 className="section-title">Product images</h3>
+            <ImageUpload
+              onSelect={(value) => {
+                setFeaturedImage(value);
+              }}
+              label="Featured Image"
+              selectedImageIds={featuredImage}
+              previewPosition="outside"
+            />
+            <ImageUpload
+              onSelect={(value) => {
+                setGalleryImages(value);
+              }}
+              label="Gallery Images"
+              selectedImageIds={galleryImages}
+              previewPosition="outside"
+              multiple
+            />
+          </div>
+        </div>
+      </form>
     </div>
   );
 };
+
 export default EditProduct;

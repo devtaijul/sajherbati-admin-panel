@@ -30,7 +30,7 @@ export interface UploadResponse {
 }
 
 // types/index.ts
-export interface ApiResponse<T = any> {
+export interface ApiResponse<T> {
   success: boolean;
   data?: T;
   message?: string;
@@ -53,21 +53,69 @@ export interface PaginatedResponse<T> {
   };
 }
 
-export type Category = {
-  id: string;
-  title: string;
-  slug: string;
-  description: string | null;
-  featuredImageId: string | null;
-  seoTitle: string | null;
-  seoDescription: string | null;
-  parentId: string | null;
-  createdAt: Date;
-  updatedAt: Date;
-};
-
 export type CategoryWithParent = Category & {
   parent: Category | null;
+};
+
+export type Media = {
+  id: string;
+  createdAt: Date;
+  updatedAt: Date;
+  url: string;
+  filename: string;
+  mimeType: string;
+  size: number;
+  width: number | null;
+  height: number | null;
+  altText: string | null;
+  caption: string | null;
+  productId: string | null;
+};
+
+export type Category = {
+  featuredImageId: string | null;
+  id: string;
+  title: string;
+  description: string | null;
+  seoTitle: string | null;
+  seoDescription: string | null;
+  createdAt: Date;
+  updatedAt: Date;
+  slug: string;
+  parentId: string | null;
+  isPublished: boolean;
+};
+
+export type Product = {
+  featuredImageId: string | null;
+  categoryId: string;
+  id: string;
+  title: string;
+  stitchType: "STITCH" | "UNSTITCH";
+  relatedProductId: string | null;
+  sizes: string[];
+  regularPrice: number;
+  price: number;
+  inStock: boolean;
+  sku: string | null;
+  isTopSelling: boolean;
+  newArrival: boolean;
+  isCustomeRelation: boolean;
+  color: string | null;
+  manufacturer: string | null;
+  displayPriority: string | null;
+  keywords: string[];
+  body: string | null;
+  pantLong: string | null;
+  kamizLong: string | null;
+  innerAndSalwar: string | null;
+  description: JSON | null;
+  slug: string;
+  galleryImages: Media[] | [];
+  featuredImage: Media | null;
+  category: Category;
+  createdAt: Date;
+  updatedAt: Date;
 };
 
 export type CategoryInput = Omit<

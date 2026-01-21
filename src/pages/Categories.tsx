@@ -10,11 +10,7 @@ import { getCategories } from "../services/category.api";
 import { useEffect } from "react";
 
 const Categories = () => {
-  const pagination = usePagination<any>({
-    itemsPerPage: 5,
-    defaultSortBy: "createdAt",
-    defaultSortOrder: "desc",
-  });
+  const pagination = usePagination<any>(getCategories);
 
   const {
     data,
@@ -22,14 +18,10 @@ const Categories = () => {
     error,
     currentPage,
     totalPages,
-    fetchData,
+
     goToNextPage,
     goToPrevPage,
   } = pagination;
-
-  useEffect(() => {
-    fetchData(getCategories);
-  }, [currentPage]); // page change হলে auto fetch
 
   return (
     <div className="flex h-auto border-t border-blackSecondary border-1 dark:bg-blackPrimary bg-whiteSecondary">

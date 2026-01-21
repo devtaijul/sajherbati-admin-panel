@@ -9,3 +9,6 @@ export const getCategoryTree = async () =>
 
 export const getProducts = async () =>
   axios.get(`${BACKEND_URL}/product`).then((res) => res.data);
+
+export const getproductById = async (id: string) =>
+  axios.get(`${BACKEND_URL}/product/${id}`).then((res) => res.data);

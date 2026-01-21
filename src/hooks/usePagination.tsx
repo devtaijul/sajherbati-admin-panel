@@ -1,6 +1,7 @@
-// usePagination.ts
-import { useState, useCallback, useMemo } from "react";
+import { useState, useCallback, useMemo, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
+
+/* ================= TYPES ================= */
 
 interface UsePaginationOptions {
   itemsPerPage?: number;
@@ -14,12 +15,21 @@ interface ApiPaginationResponse<T> {
   total: number;
 }
 
+interface FetcherParams {
+  page: number;
+  limit: number;
+  sortBy: string;
+  sortOrder: "asc" | "desc";
+  search?: string;
+}
+
 interface UsePaginationReturn<T> {
   currentPage: number;
   limit: number;
   sortBy: string;
   sortOrder: "asc" | "desc";
   search: string;
+
   totalItems: number;
   totalPages: number;
   data: T[];
@@ -31,15 +41,7 @@ interface UsePaginationReturn<T> {
   setSort: (sortBy: string, order?: "asc" | "desc") => void;
   setSearch: (search: string) => void;
 
-  fetchData: (
-    fetcher: (params: {
-      page: number;
-      limit: number;
-      sortBy: string;
-      sortOrder: "asc" | "desc";
-      search?: string;
-    }) => Promise<ApiPaginationResponse<T>>,
-  ) => Promise<void>;
+  refetch: () => Promise<void>;
 
   goToNextPage: () => void;
   goToPrevPage: () => void;
@@ -48,12 +50,19 @@ interface UsePaginationReturn<T> {
   getPaginationRange: () => number[];
 }
 
-const usePagination = <T,>({
-  itemsPerPage = 10,
-  defaultSortBy = "createdAt",
-  defaultSortOrder = "desc",
-}: UsePaginationOptions = {}): UsePaginationReturn<T> => {
+/* ================= HOOK ================= */
+
+const usePagination = <T,>(
+  fetcher: (params: FetcherParams) => Promise<ApiPaginationResponse<T>>,
+  {
+    itemsPerPage = 10,
+    defaultSortBy = "createdAt",
+    defaultSortOrder = "desc",
+  }: UsePaginationOptions = {},
+): UsePaginationReturn<T> => {
   const [searchParams, setSearchParams] = useSearchParams();
+
+  /* ===== URL STATE ===== */
 
   const currentPage = Number(searchParams.get("page") || 1);
   const limit = Number(searchParams.get("limit") || itemsPerPage);
@@ -63,15 +72,20 @@ const usePagination = <T,>({
     | "desc";
   const search = searchParams.get("search") || "";
 
+  /* ===== DATA STATE ===== */
+
   const [data, setData] = useState<T[]>([]);
   const [totalItems, setTotalItems] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const totalPages = useMemo(
-    () => Math.ceil(totalItems / limit),
-    [totalItems, limit],
-  );
+  /* ===== DERIVED ===== */
+
+  const totalPages = useMemo(() => {
+    return Math.max(1, Math.ceil(totalItems / limit));
+  }, [totalItems, limit]);
+
+  /* ===== URL UPDATE HELPER ===== */
 
   const updateSearchParams = useCallback(
     (
@@ -96,58 +110,83 @@ const usePagination = <T,>({
     [searchParams, setSearchParams],
   );
 
-  const setPage = (page: number) =>
-    updateSearchParams({ page: Math.max(1, Math.min(page, totalPages)) });
+  /* ===== SETTERS ===== */
 
-  const setLimit = (limit: number) => updateSearchParams({ limit, page: 1 });
+  const setPage = (page: number) => {
+    const safePage = Math.max(1, Math.min(page, totalPages));
+    updateSearchParams({ page: safePage });
+  };
 
-  const setSort = (sortBy: string, order: "asc" | "desc" = "asc") =>
-    updateSearchParams({ sortBy, sortOrder: order, page: 1 });
+  const setLimit = (limit: number) => {
+    updateSearchParams({ limit, page: 1 });
+  };
 
-  const setSearch = (value: string) =>
-    updateSearchParams({ search: value, page: 1 });
+  const setSort = (sortBy: string, order: "asc" | "desc" = "asc") => {
+    updateSearchParams({
+      sortBy,
+      sortOrder: order,
+      page: 1,
+    });
+  };
 
-  const fetchData = useCallback(
-    async (
-      fetcher: (params: {
-        page: number;
-        limit: number;
-        sortBy: string;
-        sortOrder: "asc" | "desc";
-        search?: string;
-      }) => Promise<ApiPaginationResponse<T>>,
-    ) => {
-      setIsLoading(true);
-      setError(null);
+  const setSearch = (value: string) => {
+    updateSearchParams({
+      search: value,
+      page: 1,
+    });
+  };
 
-      try {
-        const res = await fetcher({
-          page: currentPage,
-          limit,
-          sortBy,
-          sortOrder,
-          search,
-        });
-        setData(res.data);
-        setTotalItems(res.total);
-      } catch (e) {
-        setError(e instanceof Error ? e.message : "Something went wrong");
-      } finally {
-        setIsLoading(false);
-      }
-    },
-    [currentPage, limit, sortBy, sortOrder, search],
-  );
+  /* ===== FETCH LOGIC ===== */
 
-  const goToNextPage = () =>
-    currentPage < totalPages && setPage(currentPage + 1);
-  const goToPrevPage = () => currentPage > 1 && setPage(currentPage - 1);
+  const fetchData = useCallback(async () => {
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      const res = await fetcher({
+        page: currentPage,
+        limit,
+        sortBy,
+        sortOrder,
+        search,
+      });
+
+      setData(res.data);
+      setTotalItems(res.total);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Something went wrong");
+    } finally {
+      setIsLoading(false);
+    }
+  }, [fetcher, currentPage, limit, sortBy, sortOrder, search]);
+
+  /* ===== AUTO REFETCH ===== */
+
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
+
+  /* ===== PAGINATION HELPERS ===== */
+
+  const goToNextPage = () => {
+    if (currentPage < totalPages) {
+      setPage(currentPage + 1);
+    }
+  };
+
+  const goToPrevPage = () => {
+    if (currentPage > 1) {
+      setPage(currentPage - 1);
+    }
+  };
+
   const goToFirstPage = () => setPage(1);
   const goToLastPage = () => setPage(totalPages);
 
   const getPaginationRange = () => {
     const delta = 2;
     const pages: number[] = [];
+
     for (
       let i = Math.max(1, currentPage - delta);
       i <= Math.min(totalPages, currentPage + delta);
@@ -155,8 +194,11 @@ const usePagination = <T,>({
     ) {
       pages.push(i);
     }
+
     return pages;
   };
+
+  /* ===== RETURN ===== */
 
   return {
     currentPage,
@@ -164,16 +206,20 @@ const usePagination = <T,>({
     sortBy,
     sortOrder,
     search,
+
     totalItems,
     totalPages,
     data,
     isLoading,
     error,
+
     setPage,
     setLimit,
     setSort,
     setSearch,
-    fetchData,
+
+    refetch: fetchData,
+
     goToNextPage,
     goToPrevPage,
     goToFirstPage,

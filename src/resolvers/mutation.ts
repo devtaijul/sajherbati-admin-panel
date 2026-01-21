@@ -39,4 +39,4 @@ export const updateProductMutation = async ({
 }) => axios.put(`${BACKEND_URL}/product/${id}`, product);
 
 export const deleteProductMutation = async (id: string) =>
-  axios.delete(`${BACKEND_URL}/product/${id}`);
+  await axios.delete(`${BACKEND_URL}/product/${id}`);

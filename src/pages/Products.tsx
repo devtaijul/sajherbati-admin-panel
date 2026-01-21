@@ -1,46 +1,20 @@
-import {
-  Pagination,
-  ProductTable,
-  RowsPerPage,
-  Sidebar,
-  WhiteButton,
-} from "../components";
-import { HiOutlinePlus } from "react-icons/hi";
-import { HiOutlineChevronRight } from "react-icons/hi";
 import { AiOutlineExport } from "react-icons/ai";
-import { HiOutlineSearch } from "react-icons/hi";
+import {
+  HiOutlineChevronRight,
+  HiOutlinePlus,
+  HiOutlineSearch,
+} from "react-icons/hi";
+import { Pagination, ProductTable, Sidebar, WhiteButton } from "../components";
+
 import usePagination from "../hooks/usePagination";
-import { useEffect, useState } from "react";
 import { getProducts } from "../services/products.api";
-import useDebounce from "../hooks/useDebounce";
+import { ProductSchema } from "../utils/validation";
+import { Product } from "../vite-env";
 
 const Products = () => {
-  const pagination = usePagination<any>();
-  const [searchInput, setSearchInput] = useState("");
-  const debouncedSearch = useDebounce(searchInput, 500);
+  const pagination = usePagination<ProductSchema>(getProducts);
 
-  const {
-    data,
-    isLoading,
-    error,
-    currentPage,
-    totalPages,
-    search,
-    setSearch,
-    fetchData,
-    goToNextPage,
-    goToPrevPage,
-  } = pagination;
-
-  // Fetch data on page, sort, or search change
-  useEffect(() => {
-    fetchData(getProducts);
-  }, [currentPage, fetchData, search]);
-
-  // Update pagination search when debounced input changes
-  useEffect(() => {
-    setSearch(debouncedSearch);
-  }, [debouncedSearch, setSearch]);
+  const { data, isLoading, error, setSearch, refetch, search } = pagination;
 
   return (
     <div className="flex h-auto border-t dark:border-blackSecondary border-blackSecondary border-1 dark:bg-blackPrimary bg-whiteSecondary">
@@ -85,8 +59,8 @@ const Products = () => {
                 placeholder="Search products..."
                 name="search"
                 id="search"
-                value={searchInput}
-                onChange={(e) => setSearchInput(e.target.value)}
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
               />
             </div>
             <div>
@@ -103,7 +77,12 @@ const Products = () => {
               </select>
             </div>
           </div>
-          <ProductTable products={data} loading={isLoading} error={error} />
+          <ProductTable
+            products={data as Product[]}
+            loading={isLoading}
+            error={error}
+            refetch={refetch}
+          />
           <div className="flex items-center justify-between gap-4 px-4 py-6 sm:px-6 lg:px-8 max-sm:flex-col max-sm:pt-6 max-sm:pb-0">
             <Pagination
               pagination={pagination}

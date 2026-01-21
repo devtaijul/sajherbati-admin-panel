@@ -1,6 +1,11 @@
 import { HiOutlineEye, HiOutlinePencil, HiOutlineTrash } from "react-icons/hi";
 import { Link } from "react-router-dom";
 import ProductTableSkeleton from "./skeleton/ProductTableSkeleton";
+import { PAGES } from "../config/pages.config";
+import { useMutation } from "@tanstack/react-query";
+import { deleteProductMutation } from "../resolvers/mutation";
+import toast from "react-hot-toast";
+import { Product } from "../vite-env";
 
 const inStockClass =
   "text-green-400 bg-green-400/10 flex-none rounded-full p-1";
@@ -9,22 +14,33 @@ const outOfStockClass =
 
 const DEFAULT_IMAGE = "https://via.placeholder.com/40?text=No+Image";
 
-interface Product {
-  id: string;
-  title: string;
-  sku?: string;
-  status?: string;
-  price?: number;
-  featuredImage?: { url?: string } | null;
-}
-
 interface Props {
   products: Product[] | null;
   loading: boolean;
   error: string | null;
+  refetch: () => void;
 }
 
-const ProductTable = ({ products, loading, error }: Props) => {
+const ProductTable = ({ products, loading, error, refetch }: Props) => {
+  const { mutate: deleteMutation } = useMutation({
+    mutationKey: ["deleteProduct"],
+    mutationFn: deleteProductMutation,
+  });
+
+  const handleDelete = (id: string) => {
+    if (confirm("Are you sure you want to delete this product?")) {
+      deleteMutation(id, {
+        onSuccess: () => {
+          toast.success("Product deleted successfully");
+          refetch();
+        },
+        onError: () => {
+          toast.error("Failed to delete product");
+        },
+      });
+    }
+  };
+
   if (loading) return <ProductTableSkeleton />;
   if (error) return <div className="text-red-500">Error: {error}</div>;
   if (!products || products.length === 0)
@@ -59,7 +75,7 @@ const ProductTable = ({ products, loading, error }: Props) => {
       <tbody className="divide-y divide-white/5">
         {products.map((item) => {
           const imageUrl = item.featuredImage?.url || DEFAULT_IMAGE;
-          const statusText = item.status || "Unknown";
+          const statusText = item.inStock || "Unknown";
 
           return (
             <tr key={item.id}>
@@ -87,17 +103,11 @@ const ProductTable = ({ products, loading, error }: Props) => {
               {/* Status */}
               <td className="table-cell py-4 pl-0 pr-8 text-sm leading-6">
                 <div className="flex items-center justify-start gap-x-2">
-                  <div
-                    className={
-                      statusText.toLowerCase() === "in stock"
-                        ? inStockClass
-                        : outOfStockClass
-                    }
-                  >
+                  <div className={statusText ? inStockClass : outOfStockClass}>
                     <div className="h-1.5 w-1.5 rounded-full bg-current" />
                   </div>
                   <div className="block dark:text-whiteSecondary text-blackPrimary">
-                    {statusText}
+                    {statusText ? "In stock" : "Out of stock  "}
                   </div>
                 </div>
               </td>
@@ -108,26 +118,26 @@ const ProductTable = ({ products, loading, error }: Props) => {
               </td>
 
               {/* Actions */}
-              <td className="table-cell py-4 pl-0 pr-4 pr-6 text-sm leading-6 text-right dark:text-whiteSecondary text-blackPrimary lg:pr-8">
+              <td className="table-cell py-4 pl-0 pr-6 text-sm leading-6 text-right dark:text-whiteSecondary text-blackPrimary lg:pr-8">
                 <div className="flex justify-end gap-x-1">
                   <Link
-                    to={`/products/${item.id}/edit`}
-                    className="flex items-center justify-center block w-8 h-8 border border-gray-600 cursor-pointer dark:bg-blackPrimary bg-whiteSecondary dark:text-whiteSecondary text-blackPrimary hover:border-gray-400"
+                    to={PAGES.PRODUCT.EDIT(item.id)}
+                    className="flex items-center justify-center w-8 h-8 border border-gray-600 cursor-pointer dark:bg-blackPrimary bg-whiteSecondary dark:text-whiteSecondary text-blackPrimary hover:border-gray-400"
                   >
                     <HiOutlinePencil className="text-lg" />
                   </Link>
                   <Link
-                    to={`/products/${item.id}`}
-                    className="flex items-center justify-center block w-8 h-8 border border-gray-600 cursor-pointer dark:bg-blackPrimary bg-whiteSecondary dark:text-whiteSecondary text-blackPrimary hover:border-gray-400"
+                    to={PAGES.PRODUCT.EDIT(item.id)}
+                    className="flex items-center justify-center w-8 h-8 border border-gray-600 cursor-pointer dark:bg-blackPrimary bg-whiteSecondary dark:text-whiteSecondary text-blackPrimary hover:border-gray-400"
                   >
                     <HiOutlineEye className="text-lg" />
                   </Link>
-                  <Link
-                    to="#"
-                    className="flex items-center justify-center block w-8 h-8 border border-gray-600 cursor-pointer dark:bg-blackPrimary bg-whiteSecondary dark:text-whiteSecondary text-blackPrimary hover:border-gray-400"
+                  <button
+                    onClick={() => handleDelete(item.id)}
+                    className="flex items-center justify-center w-8 h-8 border border-gray-600 cursor-pointer dark:bg-blackPrimary bg-whiteSecondary dark:text-whiteSecondary text-blackPrimary hover:border-gray-400"
                   >
                     <HiOutlineTrash className="text-lg" />
-                  </Link>
+                  </button>
                 </div>
               </td>
             </tr>

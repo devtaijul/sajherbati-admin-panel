@@ -1,4 +1,3 @@
-import { AiOutlineSave } from "react-icons/ai";
 import { HiOutlineSave } from "react-icons/hi";
 import {
   ImageUpload,
@@ -10,23 +9,22 @@ import SelectInput from "../components/SelectInput";
 import SimpleInput from "../components/SimpleInput";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm, Controller } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 
+import { useMutation } from "@tanstack/react-query";
+import { ChangeEvent, useState } from "react";
+import toast from "react-hot-toast";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
-import { ProductSchema, productSchema } from "../utils/validation";
-import SwitchToggle from "../components/SwitchToggle";
 import ColorPicker from "../components/ColorPicker";
 import KeywordInput from "../components/KeywordInput";
-import React, { useState } from "react";
-import SizeSelector from "../components/SizeSelector";
 import { ParentToChildCategorySelector } from "../components/ParentToChildCategorySelector";
-import { useMutation } from "@tanstack/react-query";
+import ProductRelationSelector from "../components/ProductRelationSelector";
+import SizeSelector from "../components/SizeSelector";
+import SwitchToggle from "../components/SwitchToggle";
 import { createProductMutation } from "../resolvers/mutation";
-import toast from "react-hot-toast";
-import ProductRelationSelector, {
-  Product,
-} from "../components/ProductRelationSelector";
+import { ProductSchema, productSchema } from "../utils/validation";
+import { Product } from "../vite-env";
 
 const CreateProduct = () => {
   const {
@@ -52,7 +50,8 @@ const CreateProduct = () => {
   const [featuredImage, setFeaturedImage] = useState<string[]>([]);
   const [galleryImages, setGalleryImages] = useState<string[]>([]);
   const [relatedProducts, setRelatedProducts] = useState<Product[]>([]);
-  console.log("relatedProducts", relatedProducts);
+  const [attachProduct, setAttachProduct] = useState<Product[]>([]);
+  const [openAttachProduct, setOpenAttachProduct] = useState(false);
 
   const { mutate, isPending } = useMutation({
     mutationKey: ["create-product"],
@@ -63,15 +62,13 @@ const CreateProduct = () => {
   const displayPriority = watch("displayPriority");
 
   const onSubmit = (data: ProductSchema) => {
-    console.log("PRODUCT DATA 👉", data);
-    console.log("FEATURED IMAGE 👉", featuredImage);
-    console.log("GALLERY IMAGES 👉", galleryImages);
     const variables = {
       ...data,
       featuredImageId: featuredImage[0],
       galleryImageIds: galleryImages,
+      relatedProductIds: relatedProducts.map((product) => product.id),
+      attachProductId: attachProduct.length > 0 ? attachProduct[0].id : null,
     };
-    console.log("variables", variables);
 
     mutate(
       {
@@ -84,9 +81,10 @@ const CreateProduct = () => {
           reset();
           setFeaturedImage([]);
           setGalleryImages([]);
+          setRelatedProducts([]);
+          setAttachProduct([]);
         },
-        onError: (error: any) => {
-          console.error("Failed to create product:", error);
+        onError: () => {
           toast.error("Failed to create product");
         },
       },
@@ -165,12 +163,24 @@ const CreateProduct = () => {
             </InputWithLabel>
 
             {/* Related Product */}
-            {stitchType && (
-              <InputWithLabel label="Connect with other variant (optional)">
-                <select {...register("relatedProductId")} className="input">
-                  <option value="">None</option>
-                  {/* Load product list here */}
-                </select>
+            <div className="mt-4"></div>
+            <SwitchToggle
+              label="Open attach  product"
+              className="mt-4"
+              register={{
+                onChange: (event: ChangeEvent<HTMLInputElement>) => {
+                  setOpenAttachProduct(event.target.checked);
+                },
+              }}
+            />
+
+            {openAttachProduct && (
+              <InputWithLabel label="Attach product">
+                <ProductRelationSelector
+                  value={attachProduct}
+                  onChange={setAttachProduct}
+                  multiple={false}
+                />
               </InputWithLabel>
             )}
 

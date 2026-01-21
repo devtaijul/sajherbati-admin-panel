@@ -6,8 +6,8 @@ export const PAGES = {
     CREATE: "/category/create-category",
   },
   PRODUCT: {
-    ROOT: "/product",
-    EDIT: (id: string) => `/product/${id}`,
-    CREATE: "/product/create-product",
+    ROOT: "/products",
+    EDIT: (id: string) => `/products/${id}`,
+    CREATE: "/products/create-product",
   },
 };

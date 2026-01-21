@@ -9,8 +9,6 @@ export const productSchema = z
 
     stitchType: z.enum(["STITCH", "UNSTITCH"]),
 
-    relatedProductId: z.string().optional(),
-
     /* ================= VARIANT ================= */
     sizes: z.array(z.string()).optional(),
 
@@ -37,10 +35,10 @@ export const productSchema = z
     keywords: z.array(z.string()).default([]),
 
     /* ================= MEASUREMENTS ================= */
-    body: z.string().optional(),
+    body: z.string().nullable().optional(),
     pantLong: z.string().optional(),
     kamizLong: z.string().optional(),
-    innerAndSalwar: z.string().optional(),
+    innerAndSalwar: z.string().nullable().optional(),
 
     /* ================= CONTENT ================= */
     description: z.any(),

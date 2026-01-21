@@ -1,7 +1,13 @@
 // components/KeywordInput.tsx
 import { useState } from "react";
 
-const KeywordInput = ({ value = [], onChange }: any) => {
+const KeywordInput = ({
+  value = [],
+  onChange,
+}: {
+  value: string[];
+  onChange: (value: string[]) => void;
+}) => {
   const [input, setInput] = useState("");
 
   const addKeyword = () => {
@@ -11,7 +17,15 @@ const KeywordInput = ({ value = [], onChange }: any) => {
   };
 
   const removeKeyword = (i: number) => {
-    onChange(value.filter((_: any, idx: number) => idx !== i));
+    onChange(value.filter((_: string, idx: number) => idx !== i));
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Tab") {
+      if (!input.trim()) return;
+      onChange([...value, input.trim()]);
+      setInput("");
+    }
   };
 
   return (
@@ -22,6 +36,7 @@ const KeywordInput = ({ value = [], onChange }: any) => {
           onChange={(e) => setInput(e.target.value)}
           className="flex-1 w-full px-4 py-2 input dark:bg-blackPrimary dark:text-whiteSecondary text-blackPrimary"
           placeholder="Add keyword"
+          onKeyDown={handleKeyDown}
         />
         <button
           type="button"
