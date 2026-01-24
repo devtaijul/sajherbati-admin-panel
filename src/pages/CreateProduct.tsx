@@ -12,7 +12,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from "react-hook-form";
 
 import { useMutation } from "@tanstack/react-query";
-import { ChangeEvent, useState } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
@@ -44,6 +44,8 @@ const CreateProduct = () => {
       isCustomeRelation: false,
       sizes: [],
       inStock: true,
+      slug: "",
+      title: "",
       stitchType: "STITCH",
     },
   });
@@ -91,6 +93,16 @@ const CreateProduct = () => {
     );
   };
 
+  const generatedSlug = `${watch("title")
+    .toLowerCase()
+    .replace(/[^a-zA-Z0-9]+/g, "-")
+    .replace(/^-+/, "")
+    .replace(/-+$/, "")}`;
+
+  useEffect(() => {
+    setValue("slug", generatedSlug);
+  }, [setValue, generatedSlug]);
+
   return (
     <div className="flex h-auto border-t border-blackSecondary dark:bg-blackPrimary bg-whiteSecondary">
       <Sidebar />
@@ -134,6 +146,12 @@ const CreateProduct = () => {
               <SimpleInput {...register("title")} />
               {errors.title && (
                 <p className="error">{String(errors.title.message)}</p>
+              )}
+            </InputWithLabel>
+            <InputWithLabel label="Slug">
+              <SimpleInput {...register("slug")} />
+              {errors.slug && (
+                <p className="error">{String(errors.slug.message)}</p>
               )}
             </InputWithLabel>
 
@@ -286,7 +304,7 @@ const CreateProduct = () => {
               {/* Keywords */}
               <InputWithLabel label="Keywords">
                 <KeywordInput
-                  value={watch("keywords")}
+                  value={watch("keywords") as string[]}
                   onChange={(val: string[]) => setValue("keywords", val)}
                 />
               </InputWithLabel>

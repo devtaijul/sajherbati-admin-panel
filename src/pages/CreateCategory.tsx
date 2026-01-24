@@ -1,6 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { HiOutlineSave } from "react-icons/hi";
 import {
@@ -65,6 +65,12 @@ const CreateCategory = () => {
       },
     );
   };
+
+  const generatedSlug = `${watch("title")?.toLowerCase().replace(/ /g, "-")}`;
+
+  useEffect(() => {
+    setValue("slug", generatedSlug);
+  }, [generatedSlug, setValue]);
 
   return (
     <div className="flex h-auto border-t border-blackSecondary border-1 dark:bg-blackPrimary bg-whiteSecondary">

@@ -4,6 +4,7 @@ export const productSchema = z
   .object({
     /* ================= BASIC ================= */
     title: z.string().min(3, "Title is required").max(150),
+    slug: z.string().min(3, "Title is required").max(150),
 
     categoryId: z.string().min(1, "Category is required"),
 

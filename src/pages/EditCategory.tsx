@@ -82,6 +82,12 @@ const EditCategory = () => {
     );
   };
 
+  const generatedSlug = `${watch("title")?.toLowerCase().replace(/ /g, "-")}`;
+
+  useEffect(() => {
+    setValue("slug", generatedSlug);
+  }, [generatedSlug, setValue]);
+
   if (isFetching) return <p className="p-5">Loading...</p>;
 
   return (
