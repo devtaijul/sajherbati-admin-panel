@@ -68,6 +68,7 @@ const SelectedMediaPreview: React.FC<SelectedMediaPreviewProps> = ({
 
             {/* Remove Button */}
             <button
+              type="button"
               onClick={() => onRemove(media.id)}
               className="absolute p-1 text-white transition-opacity bg-red-500 rounded-full opacity-0 top-1 right-1 group-hover:opacity-100 hover:bg-red-600"
               title="Remove"
@@ -140,7 +141,7 @@ const SelectedMediaPreview: React.FC<SelectedMediaPreviewProps> = ({
             {(
               selectedMedia.reduce(
                 (acc: number, media: Media) => acc + media.size,
-                0
+                0,
               ) /
               1024 /
               1024
@@ -152,6 +153,7 @@ const SelectedMediaPreview: React.FC<SelectedMediaPreviewProps> = ({
         <div className="flex gap-2">
           {onClearAll && (
             <button
+              type="button"
               onClick={onClearAll}
               className="px-3 py-1 text-sm border border-gray-300 rounded hover:bg-gray-100"
             >
@@ -159,6 +161,7 @@ const SelectedMediaPreview: React.FC<SelectedMediaPreviewProps> = ({
             </button>
           )}
           <button
+            type="button"
             onClick={() => {
               // You can add a function to view all selected images
               console.log("View all selected:", selectedMedia);

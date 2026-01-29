@@ -1,5 +1,5 @@
 import axios from "axios";
-const BACKEND_URL = "http://localhost:5000/api/v1";
+const BACKEND_URL = "http://localhost:4000/api/v1";
 interface GetProductsParams {
   page: number;
   limit: number;

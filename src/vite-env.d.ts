@@ -55,6 +55,9 @@ export interface PaginatedResponse<T> {
 
 export type CategoryWithParent = Category & {
   parent: Category | null;
+  _count: {
+    products: number;
+  };
 };
 
 export type Media = {

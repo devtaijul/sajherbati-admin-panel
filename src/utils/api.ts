@@ -2,7 +2,7 @@
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from "axios";
 
 // API base URL - আপনার backend URL এখানে বসাবেন
-const BASE_URL = "http://localhost:5000/api";
+const BASE_URL = "http://localhost:4000/api";
 
 // Create axios instance with default config
 const api: AxiosInstance = axios.create({

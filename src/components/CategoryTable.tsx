@@ -25,8 +25,6 @@ const CategoryTable = ({
   data: CategoryWithParent[];
   error: string | null;
 }) => {
-  console.log("data", data);
-
   if (loading) {
     return <CategoryListSkeleton />;
   }
@@ -98,7 +96,7 @@ const CategoryTable = ({
               <td className="py-4 pl-0 pr-4 text-sm leading-6 sm:pr-8 lg:pr-20">
                 <div className="flex items-center justify-start gap-x-2">
                   <div className="block dark:text-whiteSecondary text-blackPrimary">
-                    {17}
+                    {item._count.products}
                   </div>
                 </div>
               </td>

@@ -20,7 +20,6 @@ const MediaLibrary: React.FC = () => {
     search: searchTerm,
     limit: 50,
   });
-  console.log("mediadata", mediaData);
 
   const uploadMutation = useUploadMedia();
   const deleteMutation = useDeleteMedia();

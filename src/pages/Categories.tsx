@@ -7,21 +7,12 @@ import {
 import { CategoryTable, Pagination, Sidebar, WhiteButton } from "../components";
 import usePagination from "../hooks/usePagination";
 import { getCategories } from "../services/category.api";
-import { useEffect } from "react";
+import { CategoryWithParent } from "../vite-env";
 
 const Categories = () => {
-  const pagination = usePagination<any>(getCategories);
+  const pagination = usePagination<CategoryWithParent>(getCategories);
 
-  const {
-    data,
-    isLoading,
-    error,
-    currentPage,
-    totalPages,
-
-    goToNextPage,
-    goToPrevPage,
-  } = pagination;
+  const { data, isLoading, error } = pagination;
 
   return (
     <div className="flex h-auto border-t border-blackSecondary border-1 dark:bg-blackPrimary bg-whiteSecondary">
@@ -80,7 +71,7 @@ const Categories = () => {
               </select>
             </div>
           </div>
-          <CategoryTable loading={isLoading} data={data} error={error} />
+          <CategoryTable loading={isLoading} data={data || []} error={error} />
           <div className="flex items-center justify-between gap-4 px-4 py-6 sm:px-6 lg:px-8 max-sm:flex-col max-sm:pt-6 max-sm:pb-0">
             <Pagination
               pagination={pagination}

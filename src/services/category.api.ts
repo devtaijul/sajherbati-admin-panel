@@ -1,6 +1,6 @@
 import axios from "axios";
 import { CategoryInput } from "../vite-env";
-const BACKEND_URL = "http://localhost:5000/api/v1";
+const BACKEND_URL = "http://localhost:4000/api/v1";
 interface GetCategoriesParams {
   page: number;
   limit: number;

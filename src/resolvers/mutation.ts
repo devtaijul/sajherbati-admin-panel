@@ -2,7 +2,7 @@ import axios from "axios";
 import { updateCategory } from "../services/category.api";
 import { CategoryInput } from "../vite-env";
 import { ProductSchema } from "../utils/validation";
-const BACKEND_URL = "http://localhost:5000/api/v1";
+const BACKEND_URL = "http://localhost:4000/api/v1";
 
 export const createCategoryMutation = async ({
   category,

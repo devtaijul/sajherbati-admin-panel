@@ -29,7 +29,7 @@ export const useProductSearch = ({
       setError(null);
 
       const res = await fetch(
-        `http://localhost:5000/api/v1/product?search=${search}&page=${page}&limit=${limit}`,
+        `http://localhost:4000/api/v1/product?search=${search}&page=${page}&limit=${limit}`,
       );
 
       const json: ApiResponse = await res.json();
