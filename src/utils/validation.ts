@@ -103,7 +103,7 @@ export const categorySchema = z.object({
     .min(2, "Category title is required")
     .max(100, "Title too long"),
 
-  description: z.string().optional(),
+  description: z.string().nullable().optional(),
 
   slug: z
     .string()
@@ -117,6 +117,26 @@ export const categorySchema = z.object({
   seoTitle: z.string().max(70, "Max 70 characters").optional(),
 
   seoDescription: z.string().max(160, "Max 160 characters").optional(),
+  isPublished: z.boolean(),
 });
 
 export type CategorySchema = z.infer<typeof categorySchema>;
+
+// schemas/order.schema.ts
+
+export const orderUpdateSchema = z.object({
+  name: z.string().min(2, "Name is required"),
+  phone: z.string().min(11, "Valid phone required"),
+  address: z.string().min(5, "Address required"),
+  note: z.string().optional(),
+  status: z.enum([
+    "PENDING",
+    "CONFIRMED",
+    "PROCESSING",
+    "SHIPPED",
+    "DELIVERED",
+    "CANCELLED",
+  ]),
+});
+
+export type OrderUpdateInput = z.infer<typeof orderUpdateSchema>;

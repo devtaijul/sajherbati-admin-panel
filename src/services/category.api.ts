@@ -1,6 +1,7 @@
 import axios from "axios";
 import { CategoryInput } from "../vite-env";
-const BACKEND_URL = "http://localhost:4000/api/v1";
+import { ENV } from "../config/env.config";
+
 interface GetCategoriesParams {
   page: number;
   limit: number;
@@ -14,7 +15,7 @@ export const getCategories = async ({
   sortBy,
   sortOrder,
 }: GetCategoriesParams) => {
-  const res = await axios.get(`${BACKEND_URL}/category`, {
+  const res = await axios.get(`${ENV.BACKEND_URL}/category`, {
     params: {
       page,
       limit,
@@ -27,7 +28,7 @@ export const getCategories = async ({
 };
 
 export const getCategoryById = async (id: string) => {
-  const res = await axios.get(`${BACKEND_URL}/category/${id}`);
+  const res = await axios.get(`${ENV.BACKEND_URL}/category/${id}`);
 
   return res.data;
 };
@@ -39,6 +40,6 @@ export const updateCategory = async ({
   id: string;
   category: CategoryInput;
 }) => {
-  const res = await axios.put(`${BACKEND_URL}/category/${id}`, category);
+  const res = await axios.put(`${ENV.BACKEND_URL}/category/${id}`, category);
   return res.data;
 };

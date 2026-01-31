@@ -8,21 +8,14 @@
 // Output: The header component
 // *********************
 
-import {
-  HiOutlineBell,
-  HiOutlineMenu,
-  HiOutlineMoon,
-  HiOutlineSun,
-} from "react-icons/hi";
+import { HiOutlineMenu } from "react-icons/hi";
 import { Link } from "react-router-dom";
-import { toggleDarkMode } from "../features/darkMode/darkModeSlice";
 import { setSidebar } from "../features/dashboard/dashboardSlice";
-import { useAppDispatch, useAppSelector } from "../hooks";
-import SearchInput from "./SearchInput";
+import { useAppDispatch } from "../hooks";
 
 const Header = () => {
   const dispatch = useAppDispatch();
-  const { darkMode } = useAppSelector((state) => state.darkMode);
+  /*   const { darkMode } = useAppSelector((state) => state.darkMode); */
 
   return (
     <header className="relative dark:bg-blackPrimary bg-whiteSecondary">
@@ -37,8 +30,8 @@ const Header = () => {
             Sajher Bati
           </span>
         </Link>
-        <SearchInput />
-        <div className="flex items-center gap-4 max-xl:justify-center">
+        {/*  <SearchInput /> */}
+        {/*  <div className="flex items-center gap-4 max-xl:justify-center">
           <span className="dark:text-whiteSecondary text-blackPrimary">EN</span>
           {darkMode ? (
             <HiOutlineSun
@@ -71,7 +64,7 @@ const Header = () => {
               </div>
             </div>
           </Link>
-        </div>
+        </div> */}
       </div>
     </header>
   );

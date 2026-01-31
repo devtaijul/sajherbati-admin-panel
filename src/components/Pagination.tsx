@@ -9,30 +9,32 @@
 // *********************
 
 import RowsPerPage from "./RowsPerPage";
+export type PaginationState = {
+  currentPage: number;
+  totalPages: number;
+  goToNextPage: () => void;
+  goToPrevPage: () => void;
+  setPage: (page: number) => void;
+  getPaginationRange: () => number[];
+  limit?: number;
+  setLimit?: (limit: number) => void;
+  goToFirstPage?: () => void;
+  goToLastPage?: () => void;
+};
+
 interface PaginationProps {
-  pagination: {
-    currentPage: number;
-    totalPages: number;
-    goToNextPage: () => void;
-    goToPrevPage: () => void;
-    setPage: (page: number) => void;
-    getPaginationRange: () => number[];
-    limit?: number;
-    setLimit?: (limit: number) => void;
-    goToFirstPage?: () => void;
-    goToLastPage?: () => void;
-  };
+  pagination: PaginationState;
   showPageNumbers?: boolean;
   showLimitSelector?: boolean;
   customLimits?: number[];
 }
 
-const Pagination: React.FC<PaginationProps> = ({
+const Pagination = ({
   pagination,
   showPageNumbers = true,
   showLimitSelector = false,
   customLimits = [5, 10, 20, 50],
-}) => {
+}: PaginationProps) => {
   const {
     currentPage,
     totalPages,

@@ -24,7 +24,7 @@ export const mediaService = {
   // Upload media
   uploadMedia: async (
     file: File,
-    onProgress?: (progressEvent: any) => void,
+    /*     onProgress?: (progressEvent: any) => void, */
   ): Promise<UploadResponse> => {
     const formData = new FormData();
     formData.append("file", file);
@@ -37,8 +37,8 @@ export const mediaService = {
   },
 
   // Delete media
-  deleteMedia: async (id: string): Promise<ApiResponse> => {
-    const response = await apiHelper.delete<ApiResponse>(`/media/${id}`);
+  deleteMedia: async (id: string) => {
+    const response = await apiHelper.delete(`/media/${id}`);
     return response;
   },
 
@@ -76,8 +76,8 @@ export const mediaService = {
   },
 
   // Disconnect media
-  disconnectMedia: async (connectionId: string): Promise<ApiResponse> => {
-    const response = await apiHelper.delete<ApiResponse>(
+  disconnectMedia: async (connectionId: string) => {
+    const response = await apiHelper.delete(
       `/media/connections/${connectionId}`,
     );
     return response;
@@ -95,10 +95,10 @@ export const mediaService = {
   // Bulk upload multiple files
   uploadMultiple: async (
     files: File[],
-    onProgress?: (progressEvent: any) => void,
+    /*   onProgress?: (progressEvent: any) => void, */
   ): Promise<ApiResponse<Media[]>> => {
     const formData = new FormData();
-    files.forEach((file, index) => {
+    files.forEach((file) => {
       formData.append(`files`, file);
     });
 

@@ -121,7 +121,62 @@ export type Product = {
   updatedAt: Date;
 };
 
+export type StitchType = "STITCH" | "UNSTITCH";
+
+export type OrderItems = {
+  id: string;
+  createdAt?: Date;
+  updatedAt?: Date;
+  title: string;
+  image: string;
+  price: number;
+  quantity: number;
+  productId: string;
+  size: string;
+  stitchType: StitchType;
+  orderId?: string;
+};
+
+export type PaymentMethod = "CASH_ON_DELIVERY" | "BKASH";
+
+export type Order = {
+  id: string;
+  name: string;
+  phone: string;
+  address: string;
+  trackingNumber: string;
+  paymentMethod: PaymentMethod;
+  deliveryArea: string;
+  subtotal: number;
+  deliveryCharge: number;
+  orderItems: OrderItems[];
+  status: orderStatus;
+  total: number;
+  note: string | null;
+  createdAt: Date;
+  updatedAt: Date;
+};
+
 export type CategoryInput = Omit<
   Category,
   "id" | "createdAt" | "updatedAt" | "children"
 >;
+
+/// <reference types="vite/client" />
+
+export interface ImportMetaEnv {
+  readonly VITE_BACKEND_URL: string;
+  // অন্যান্য ভেরিয়েবল এখানে যোগ করুন
+}
+
+export interface ImportMeta {
+  readonly env: ImportMetaEnv;
+}
+
+export type orderStatus =
+  | "PENDING"
+  | "CONFIRMED"
+  | "PROCESSING"
+  | "SHIPPED"
+  | "DELIVERED"
+  | "CANCELLED";

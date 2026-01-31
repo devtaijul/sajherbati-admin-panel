@@ -1,5 +1,6 @@
 import { useEffect, useState, useCallback } from "react";
 import { Product } from "../vite-env";
+import { ENV } from "../config/env.config";
 
 interface UseProductSearchOptions {
   limit?: number;
@@ -29,7 +30,7 @@ export const useProductSearch = ({
       setError(null);
 
       const res = await fetch(
-        `http://localhost:4000/api/v1/product?search=${search}&page=${page}&limit=${limit}`,
+        `${ENV.BACKEND_URL}/product?search=${search}&page=${page}&limit=${limit}`,
       );
 
       const json: ApiResponse = await res.json();

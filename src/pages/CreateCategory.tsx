@@ -32,6 +32,7 @@ const CreateCategory = () => {
       slug: "",
       parentCategoryId: "",
       seoTitle: "",
+      isPublished: true,
       seoDescription: "",
     },
   });
@@ -44,8 +45,12 @@ const CreateCategory = () => {
   const onSubmit = (data: CategorySchema) => {
     const payload = {
       ...data,
+      isPublished: true, // ✅ ADD THIS
+      description: data.description ?? null,
       featuredImageId: selectedImageIds[0],
       parentId: data.parentCategoryId || null,
+      seoTitle: data.seoTitle ?? null,
+      seoDescription: data.seoDescription ?? null,
     };
 
     console.log("CATEGORY DATA 👉", payload);
@@ -59,8 +64,8 @@ const CreateCategory = () => {
           reset();
           setSelectedImageIds([]);
         },
-        onError: (error: any) => {
-          console.error("Failed to create category:", error);
+        onError: () => {
+          console.error("Failed to create category:");
         },
       },
     );

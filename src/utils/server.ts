@@ -60,3 +60,18 @@ export function actionError(
     meta: null,
   };
 }
+
+export const formatDate = (
+  date: Date | string,
+  locale: string = "en-GB",
+): string => {
+  const d = typeof date === "string" ? new Date(date) : date;
+
+  if (isNaN(d.getTime())) return "";
+
+  return d.toLocaleDateString(locale, {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  });
+};

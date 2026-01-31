@@ -44,8 +44,19 @@ const EditProduct = () => {
     reset,
     watch,
     formState: { errors },
-  } = useForm<ProductSchema>({
+  } = useForm({
     resolver: zodResolver(productSchema),
+    defaultValues: {
+      displayPriority: "0",
+      isTopSelling: false,
+      newArrival: false,
+      isCustomeRelation: false,
+      sizes: [],
+      inStock: true,
+      slug: "",
+      title: "",
+      stitchType: "STITCH",
+    },
   });
 
   console.log("error", errors);
@@ -72,7 +83,7 @@ const EditProduct = () => {
   });
 
   /* ================= SUBMIT ================= */
-  const onSubmit = (data: ProductSchema) => {
+  const onSubmit = (data: ProductSchema | any) => {
     const variables = {
       id,
       ...data,
@@ -268,7 +279,7 @@ const EditProduct = () => {
                   )}
                 />
                 {errors.sizes && (
-                  <p className="error">{errors.sizes.message}</p>
+                  <p className="error">{errors?.sizes.message}</p>
                 )}
               </div>
             )}
@@ -333,7 +344,7 @@ const EditProduct = () => {
               {/* Keywords */}
               <InputWithLabel label="Keywords">
                 <KeywordInput
-                  value={watch("keywords")}
+                  value={watch("keywords") || []}
                   onChange={(val: string[]) => setValue("keywords", val)}
                 />
               </InputWithLabel>
@@ -382,7 +393,7 @@ const EditProduct = () => {
               <InputWithLabel label="Description">
                 <ReactQuill
                   theme="snow"
-                  value={watch("description")}
+                  value={watch("description") || ""}
                   className="bg-white dark:bg-blackPrimary dark:text-white text-blackPrimary"
                   onChange={(val) => setValue("description", val)}
                 />
@@ -391,7 +402,7 @@ const EditProduct = () => {
               <InputWithLabel label="Instruction">
                 <ReactQuill
                   theme="snow"
-                  value={watch("instruction")}
+                  value={watch("instruction") || ""}
                   className="bg-white dark:bg-blackPrimary dark:text-white text-blackPrimary"
                   onChange={(val) => setValue("instruction", val)}
                 />

@@ -1,7 +1,11 @@
 import { useQuery } from "@tanstack/react-query";
 import { getCategoryTree } from "../resolvers/query";
-import { Category } from "../vite-env";
 import SelectInput from "./SelectInput";
+type CategoryTree = {
+  id: string;
+  title: string;
+  children?: CategoryTree[];
+};
 
 export const ParentToChildCategorySelector = ({
   selectedValue,
@@ -22,26 +26,18 @@ export const ParentToChildCategorySelector = ({
   }
 
   const generateSelectList = (
-    categories: Category &
-      {
-        children: Category & { children: Category[] }[];
-        id: string;
-        title: string;
-      }[],
+    categories: CategoryTree[],
     depth: number = 0,
-    result: { value: string; label: string; indent?: string }[] = [],
+    result: { value: string; label: string }[] = [],
   ) => {
     categories.forEach((category) => {
-      // Create indentation prefix
       const indent = depth > 0 ? "--".repeat(depth) + " " : "";
 
       result.push({
         value: category.id,
         label: `${indent}${category.title}`,
-        //indent: " ".repeat(depth * 4), // For option styling if needed
       });
 
-      // Recursively process children
       if (category.children && category.children.length > 0) {
         generateSelectList(category.children, depth + 1, result);
       }

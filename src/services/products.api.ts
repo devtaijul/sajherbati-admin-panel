@@ -1,5 +1,6 @@
 import axios from "axios";
-const BACKEND_URL = "http://localhost:4000/api/v1";
+import { ENV } from "../config/env.config";
+
 interface GetProductsParams {
   page: number;
   limit: number;
@@ -15,7 +16,7 @@ export const getProducts = async ({
   search,
   sortOrder,
 }: GetProductsParams) => {
-  const res = await axios.get(`${BACKEND_URL}/product`, {
+  const res = await axios.get(`${ENV.BACKEND_URL}/product`, {
     params: {
       page,
       limit,
@@ -29,7 +30,7 @@ export const getProducts = async ({
 };
 
 /* export const getCategoryById = async (id: string) => {
-  const res = await axios.get(`${BACKEND_URL}/category/${id}`);
+  const res = await axios.get(`${ENV.BACKEND_URL}/category/${id}`);
 
   return res.data;
 };
@@ -41,7 +42,7 @@ export const updateCategory = async ({
   id: string;
   category: CategoryInput;
 }) => {
-  const res = await axios.put(`${BACKEND_URL}/category/${id}`, category);
+  const res = await axios.put(`${ENV.BACKEND_URL}/category/${id}`, category);
   return res.data;
 };
  */

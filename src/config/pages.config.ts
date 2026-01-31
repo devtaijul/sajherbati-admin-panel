@@ -10,4 +10,8 @@ export const PAGES = {
     EDIT: (id: string) => `/products/${id}`,
     CREATE: "/products/create-product",
   },
+  ORDER: {
+    ROOT: "/orders",
+    EDIT: (id: string) => `/orders/${id}`,
+  },
 };

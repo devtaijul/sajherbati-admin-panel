@@ -1,53 +1,68 @@
-
-import { OrderTable, Pagination, RowsPerPage, Sidebar } from "../components";
-import { HiOutlinePlus } from "react-icons/hi";
-import { HiOutlineChevronRight } from "react-icons/hi";
 import { AiOutlineExport } from "react-icons/ai";
-import { HiOutlineSearch } from "react-icons/hi";
+import {
+  HiOutlineChevronRight,
+  HiOutlinePlus,
+  HiOutlineSearch,
+} from "react-icons/hi";
 import { Link } from "react-router-dom";
+import { OrderTable, Pagination, Sidebar } from "../components";
+import usePagination from "../hooks/usePagination";
+import { getOrders } from "../services/orders.api";
+import { Order } from "../vite-env";
 
 const Orders = () => {
+  const pagination = usePagination<Order>(getOrders);
+
+  const { data, isLoading, error, setSearch, search } = pagination;
+
   return (
-    <div className="h-auto border-t border-blackSecondary border-1 flex dark:bg-blackPrimary bg-whiteSecondary">
+    <div className="flex h-auto border-t border-blackSecondary border-1 dark:bg-blackPrimary bg-whiteSecondary">
       <Sidebar />
-      <div className="dark:bg-blackPrimary bg-whiteSecondary w-full ">
-        <div className="dark:bg-blackPrimary bg-whiteSecondary py-10">
-          <div className="px-4 sm:px-6 lg:px-8 flex justify-between items-center max-sm:flex-col max-sm:gap-5">
+      <div className="w-full dark:bg-blackPrimary bg-whiteSecondary ">
+        <div className="py-10 dark:bg-blackPrimary bg-whiteSecondary">
+          <div className="flex items-center justify-between px-4 sm:px-6 lg:px-8 max-sm:flex-col max-sm:gap-5">
             <div className="flex flex-col gap-3">
               <h2 className="text-3xl font-bold leading-7 dark:text-whiteSecondary text-blackPrimary">
                 All orders
               </h2>
-              <p className="dark:text-whiteSecondary text-blackPrimary text-base font-normal flex items-center">
+              <p className="flex items-center text-base font-normal dark:text-whiteSecondary text-blackPrimary">
                 <span>Dashboard</span>{" "}
                 <HiOutlineChevronRight className="text-lg" />{" "}
                 <span>All orders</span>
               </p>
             </div>
             <div className="flex gap-x-2 max-[370px]:flex-col max-[370px]:gap-2 max-[370px]:items-center">
-              <button className="dark:bg-blackPrimary bg-whiteSecondary border border-gray-600 w-32 py-2 text-lg dark:hover:border-gray-500 hover:border-gray-400 duration-200 flex items-center justify-center gap-x-2">
-                <AiOutlineExport className="dark:text-whiteSecondary text-blackPrimary text-base" />
-                <span className="dark:text-whiteSecondary text-blackPrimary font-medium">Export</span>
+              <button className="flex items-center justify-center w-32 py-2 text-lg duration-200 border border-gray-600 dark:bg-blackPrimary bg-whiteSecondary dark:hover:border-gray-500 hover:border-gray-400 gap-x-2">
+                <AiOutlineExport className="text-base dark:text-whiteSecondary text-blackPrimary" />
+                <span className="font-medium dark:text-whiteSecondary text-blackPrimary">
+                  Export
+                </span>
               </button>
-              <Link to="/orders/create-order" className="dark:bg-whiteSecondary bg-blackPrimary w-48 py-2 text-lg dark:hover:bg-white hover:bg-blackSecondary duration-200 flex items-center justify-center gap-x-1">
+              <Link
+                to="/orders/create-order"
+                className="flex items-center justify-center w-48 py-2 text-lg duration-200 dark:bg-whiteSecondary bg-blackPrimary dark:hover:bg-white hover:bg-blackSecondary gap-x-1"
+              >
                 <HiOutlinePlus className="dark:text-blackPrimary text-whiteSecondary" />
-                <span className="dark:text-blackPrimary text-whiteSecondary font-semibold">
+                <span className="font-semibold dark:text-blackPrimary text-whiteSecondary">
                   Add an order
                 </span>
               </Link>
             </div>
           </div>
-          <div className="px-4 sm:px-6 lg:px-8 flex justify-between items-center mt-5 max-sm:flex-col max-sm:gap-2">
+          <div className="flex items-center justify-between px-4 mt-5 sm:px-6 lg:px-8 max-sm:flex-col max-sm:gap-2">
             <div className="relative">
-              <HiOutlineSearch className="text-gray-400 text-lg absolute top-3 left-3" />
+              <HiOutlineSearch className="absolute text-lg text-gray-400 top-3 left-3" />
               <input
                 type="text"
-                className="w-60 h-10 border dark:bg-blackPrimary bg-white border-gray-600 dark:text-whiteSecondary text-blackPrimary outline-0 indent-10 dark:focus:border-gray-500 focus:border-gray-400"
+                onChange={(e) => setSearch(e.target.value)}
+                value={search}
+                className="h-10 bg-white border border-gray-600 w-60 dark:bg-blackPrimary dark:text-whiteSecondary text-blackPrimary outline-0 indent-10 dark:focus:border-gray-500 focus:border-gray-400"
                 placeholder="Search orders..."
               />
             </div>
             <div>
               <select
-                className="w-60 h-10 dark:bg-blackPrimary bg-whiteSecondary border border-gray-600 dark:text-whiteSecondary text-blackPrimary outline-0 pl-3 pr-8 cursor-pointer dark:hover:border-gray-500 hover:border-gray-400"
+                className="h-10 pl-3 pr-8 border border-gray-600 cursor-pointer w-60 dark:bg-blackPrimary bg-whiteSecondary dark:text-whiteSecondary text-blackPrimary outline-0 dark:hover:border-gray-500 hover:border-gray-400"
                 name="sort"
                 id="sort"
               >
@@ -59,14 +74,18 @@ const Orders = () => {
               </select>
             </div>
           </div>
-          <OrderTable />
-          <div className="flex justify-between items-center px-4 sm:px-6 lg:px-8 py-6 max-sm:flex-col gap-4 max-sm:pt-6 max-sm:pb-0">
-            <RowsPerPage />
-            <Pagination />
+          <OrderTable loading={isLoading} error={error} orders={data} />
+          <div className="flex items-center justify-between gap-4 px-4 py-6 sm:px-6 lg:px-8 max-sm:flex-col max-sm:pt-6 max-sm:pb-0">
+            <Pagination
+              customLimits={[10, 20, 50, 100]}
+              pagination={pagination}
+              showLimitSelector
+              showPageNumbers
+            />
           </div>
         </div>
       </div>
     </div>
-  )
-}
-export default Orders
+  );
+};
+export default Orders;

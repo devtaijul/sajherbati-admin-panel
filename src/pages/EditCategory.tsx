@@ -16,6 +16,7 @@ import { FlatCategory } from "../components/FlatCategory";
 import { categorySchema, CategorySchema } from "../utils/validation";
 import { getCategoryById } from "../services/category.api";
 import { updateCategoryMutation } from "../resolvers/mutation";
+import { CategoryInput } from "../vite-env";
 
 const EditCategory = () => {
   const { id } = useParams<{ id: string }>();
@@ -66,8 +67,15 @@ const EditCategory = () => {
   });
 
   const onSubmit = (data: CategorySchema) => {
-    const payload = {
-      ...data,
+    const payload: CategoryInput = {
+      title: data.title,
+      slug: data.slug,
+      isPublished: data.isPublished,
+
+      description: data.description ?? null,
+      seoTitle: data.seoTitle ?? null,
+      seoDescription: data.seoDescription ?? null,
+
       parentId: data.parentCategoryId || null,
       featuredImageId: selectedImageIds[0] || null,
     };
