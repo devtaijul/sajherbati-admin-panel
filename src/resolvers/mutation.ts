@@ -8,7 +8,12 @@ export const createCategoryMutation = async ({
   category,
 }: {
   category: CategoryInput & { featuredImageId: string };
-}) => axios.post(`${ENV.BACKEND_URL}/category`, category);
+}) =>
+  axios.post(`${ENV.BACKEND_URL}/category`, category, {
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
 
 export const updateCategoryMutation = async ({
   id,
@@ -28,7 +33,12 @@ export const createProductMutation = async ({
     featuredImageId: string;
     galleryImageIds: string[];
   };
-}) => axios.post(`${ENV.BACKEND_URL}/product`, product);
+}) =>
+  axios.post(`${ENV.BACKEND_URL}/product`, product, {
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
 
 export const updateProductMutation = async ({
   id,
@@ -36,7 +46,12 @@ export const updateProductMutation = async ({
 }: {
   id: string;
   product: ProductSchema;
-}) => axios.put(`${ENV.BACKEND_URL}/product/${id}`, product);
+}) =>
+  axios.put(`${ENV.BACKEND_URL}/product/${id}`, product, {
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
 
 export const deleteProductMutation = async (id: string) =>
   await axios.delete(`${ENV.BACKEND_URL}/product/${id}`);

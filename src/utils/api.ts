@@ -1,12 +1,10 @@
 // utils/api.ts
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from "axios";
-
-// API base URL - আপনার backend URL এখানে বসাবেন
-const BASE_URL = "http://localhost:4000/api";
+import { ENV } from "../config/env.config";
 
 // Create axios instance with default config
 const api: AxiosInstance = axios.create({
-  baseURL: BASE_URL,
+  baseURL: ENV.BACKEND_URL,
   headers: {
     "Content-Type": "application/json",
   },
