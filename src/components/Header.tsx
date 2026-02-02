@@ -18,7 +18,7 @@ const Header = () => {
   /*   const { darkMode } = useAppSelector((state) => state.darkMode); */
 
   return (
-    <header className="dark:bg-blackPrimary bg-whiteSecondary">
+    <header className="relative dark:bg-blackPrimary bg-whiteSecondary">
       <div className="flex items-center justify-between py-5 px-9 ">
         <HiOutlineMenu
           className="absolute text-2xl cursor-pointer dark:text-whiteSecondary text-blackPrimary bottom-7 left-5 xl:hidden max-sm:static max-sm:order-1"

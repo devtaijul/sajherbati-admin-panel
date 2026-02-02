@@ -1,5 +1,9 @@
-import { HiOutlineChevronRight, HiOutlineSearch } from "react-icons/hi";
-import { CategoryTable, Pagination, Sidebar } from "../components";
+import {
+  HiOutlineChevronRight,
+  HiOutlinePlus,
+  HiOutlineSearch,
+} from "react-icons/hi";
+import { CategoryTable, Pagination, Sidebar, WhiteButton } from "../components";
 import usePagination from "../hooks/usePagination";
 import { getCategories } from "../services/category.api";
 import { CategoryWithParent } from "../vite-env";
@@ -25,13 +29,14 @@ const Categories = () => {
                 <span>All categories</span>
               </p>
             </div>
-            {/*  <div className="flex gap-x-2 max-[370px]:flex-col max-[370px]:gap-2 max-[370px]:items-center">
-              <button className="flex items-center justify-center w-32 py-2 text-lg duration-200 border border-gray-600 dark:bg-blackPrimary bg-whiteSecondary hover:border-gray-500 gap-x-2">
+            <div className="flex gap-x-2 max-[370px]:flex-col max-[370px]:gap-2 max-[370px]:items-center">
+              {/* <button className="flex items-center justify-center w-32 py-2 text-lg duration-200 border border-gray-600 dark:bg-blackPrimary bg-whiteSecondary hover:border-gray-500 gap-x-2">
                 <AiOutlineExport className="text-base dark:text-whiteSecondary text-blackPrimary" />
                 <span className="font-medium dark:text-whiteSecondary text-blackPrimary">
                   Export
                 </span>
               </button>
+              */}
               <WhiteButton
                 link="/categories/create-category"
                 text="Add a category"
@@ -41,7 +46,7 @@ const Categories = () => {
               >
                 <HiOutlinePlus className="dark:text-blackPrimary text-whiteSecondary" />
               </WhiteButton>
-            </div> */}
+            </div>
           </div>
           <div className="flex items-center justify-between px-4 mt-5 sm:px-6 lg:px-8 max-sm:flex-col max-sm:gap-2">
             <div className="relative">
