@@ -117,7 +117,6 @@ export const categorySchema = z.object({
   seoTitle: z.string().max(70, "Max 70 characters").optional(),
 
   seoDescription: z.string().max(160, "Max 160 characters").optional(),
-  isPublished: z.boolean(),
 });
 
 export type CategorySchema = z.infer<typeof categorySchema>;

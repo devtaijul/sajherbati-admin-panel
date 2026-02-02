@@ -70,7 +70,7 @@ const EditCategory = () => {
     const payload: CategoryInput = {
       title: data.title,
       slug: data.slug,
-      isPublished: data.isPublished,
+      isPublished: true,
 
       description: data.description ?? null,
       seoTitle: data.seoTitle ?? null,
