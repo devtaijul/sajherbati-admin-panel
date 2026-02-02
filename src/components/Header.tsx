@@ -18,8 +18,8 @@ const Header = () => {
   /*   const { darkMode } = useAppSelector((state) => state.darkMode); */
 
   return (
-    <header className="relative dark:bg-blackPrimary bg-whiteSecondary">
-      <div className="flex justify-between items-center px-9 py-5 max-xl:flex-col max-xl:gap-y-7 max-[400px]:px-4">
+    <header className="dark:bg-blackPrimary bg-whiteSecondary">
+      <div className="flex items-center justify-between py-5 px-9 ">
         <HiOutlineMenu
           className="absolute text-2xl cursor-pointer dark:text-whiteSecondary text-blackPrimary bottom-7 left-5 xl:hidden max-sm:static max-sm:order-1"
           onClick={() => dispatch(setSidebar())}

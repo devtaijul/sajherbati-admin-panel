@@ -33,12 +33,12 @@ const Products = () => {
               </p>
             </div>
             <div className="flex gap-x-2 max-[370px]:flex-col max-[370px]:gap-2 max-[370px]:items-center">
-              <button className="flex items-center justify-center w-32 py-2 text-lg duration-200 border border-gray-600 dark:bg-blackPrimary bg-whiteSecondary hover:border-gray-500 gap-x-2">
+              {/*  <button className="flex items-center justify-center w-32 py-2 text-lg duration-200 border border-gray-600 dark:bg-blackPrimary bg-whiteSecondary hover:border-gray-500 gap-x-2">
                 <AiOutlineExport className="text-base dark:text-whiteSecondary text-blackPrimary" />
                 <span className="font-medium dark:text-whiteSecondary text-blackPrimary">
                   Export
                 </span>
-              </button>
+              </button> */}
               <WhiteButton
                 link="/products/create-product"
                 text="Add a product"
@@ -63,7 +63,7 @@ const Products = () => {
                 onChange={(e) => setSearch(e.target.value)}
               />
             </div>
-            <div>
+            {/*  <div>
               <select
                 className="h-10 pl-3 pr-8 border border-gray-600 cursor-pointer w-60 dark:bg-blackPrimary bg-whiteSecondary dark:text-whiteSecondary text-blackPrimary outline-0 hover:border-gray-500"
                 name="sort"
@@ -75,7 +75,7 @@ const Products = () => {
                 <option value="newest">Newest</option>
                 <option value="oldest">Oldest</option>
               </select>
-            </div>
+            </div> */}
           </div>
           <ProductTable
             products={data as Product[]}

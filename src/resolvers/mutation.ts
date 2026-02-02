@@ -68,3 +68,9 @@ export const updateOrderMutation = async ({
       "Content-Type": "application/json",
     },
   });
+
+export const deleteCategoryMutation = async (id: string) =>
+  await axios.delete(`${ENV.BACKEND_URL}/category/${id}`);
+
+export const deleteOrderMutation = async (id: string) =>
+  await axios.delete(`${ENV.BACKEND_URL}/order/${id}`);

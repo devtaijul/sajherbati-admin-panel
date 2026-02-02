@@ -1,10 +1,5 @@
-import { AiOutlineExport } from "react-icons/ai";
-import {
-  HiOutlineChevronRight,
-  HiOutlinePlus,
-  HiOutlineSearch,
-} from "react-icons/hi";
-import { CategoryTable, Pagination, Sidebar, WhiteButton } from "../components";
+import { HiOutlineChevronRight, HiOutlineSearch } from "react-icons/hi";
+import { CategoryTable, Pagination, Sidebar } from "../components";
 import usePagination from "../hooks/usePagination";
 import { getCategories } from "../services/category.api";
 import { CategoryWithParent } from "../vite-env";
@@ -12,7 +7,7 @@ import { CategoryWithParent } from "../vite-env";
 const Categories = () => {
   const pagination = usePagination<CategoryWithParent>(getCategories);
 
-  const { data, isLoading, error } = pagination;
+  const { data, isLoading, error, refetch } = pagination;
 
   return (
     <div className="flex h-auto border-t border-blackSecondary border-1 dark:bg-blackPrimary bg-whiteSecondary">
@@ -30,7 +25,7 @@ const Categories = () => {
                 <span>All categories</span>
               </p>
             </div>
-            <div className="flex gap-x-2 max-[370px]:flex-col max-[370px]:gap-2 max-[370px]:items-center">
+            {/*  <div className="flex gap-x-2 max-[370px]:flex-col max-[370px]:gap-2 max-[370px]:items-center">
               <button className="flex items-center justify-center w-32 py-2 text-lg duration-200 border border-gray-600 dark:bg-blackPrimary bg-whiteSecondary hover:border-gray-500 gap-x-2">
                 <AiOutlineExport className="text-base dark:text-whiteSecondary text-blackPrimary" />
                 <span className="font-medium dark:text-whiteSecondary text-blackPrimary">
@@ -46,7 +41,7 @@ const Categories = () => {
               >
                 <HiOutlinePlus className="dark:text-blackPrimary text-whiteSecondary" />
               </WhiteButton>
-            </div>
+            </div> */}
           </div>
           <div className="flex items-center justify-between px-4 mt-5 sm:px-6 lg:px-8 max-sm:flex-col max-sm:gap-2">
             <div className="relative">
@@ -57,7 +52,7 @@ const Categories = () => {
                 placeholder="Search categories..."
               />
             </div>
-            <div>
+            {/* <div>
               <select
                 className="h-10 pl-3 pr-8 border border-gray-600 cursor-pointer w-60 dark:bg-blackPrimary bg-whiteSecondary dark:text-whiteSecondary text-blackPrimary outline-0 dark:hover:border-gray-500 hover:border-gray-400"
                 name="sort"
@@ -69,9 +64,14 @@ const Categories = () => {
                 <option value="newest">Newest</option>
                 <option value="oldest">Oldest</option>
               </select>
-            </div>
+            </div> */}
           </div>
-          <CategoryTable loading={isLoading} data={data || []} error={error} />
+          <CategoryTable
+            loading={isLoading}
+            data={data || []}
+            error={error}
+            refetch={refetch}
+          />
           <div className="flex items-center justify-between gap-4 px-4 py-6 sm:px-6 lg:px-8 max-sm:flex-col max-sm:pt-6 max-sm:pb-0">
             <Pagination
               pagination={pagination}
